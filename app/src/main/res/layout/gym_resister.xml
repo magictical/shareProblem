@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/resister_title_gym_name_"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter Gym Name"/>
+    <EditText
+        android:id="@+id/resister_gym_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/resister_title_gym_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gym Location"/>
+    <EditText
+        android:id="@+id/resister_gym_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/resister_title_gym_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gym Contact"/>
+    <EditText
+        android:id="@+id/resister_gym_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/resister_title_gym_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gym Price"/>
+    <EditText
+        android:id="@+id/resister_gym_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/resister_title_gym_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gym Location"/>
+    <EditText
+        android:id="@+id/resister_gym_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+
+
+    <Button
+        android:id="@+id/check_gym_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="click here"/>
+
+</LinearLayout>

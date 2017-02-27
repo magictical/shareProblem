@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1031259210657",
+    "firebase_url": "https://climbtogether-a6a09.firebaseio.com",
+    "project_id": "climbtogether-a6a09",
+    "storage_bucket": "climbtogether-a6a09.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031259210657:android:f6df1ff8345bc85c",
+        "android_client_info": {
+          "package_name": "com.example.android.climbtogether"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031259210657-gpcq8tnth5cqshkdn6c4psjtdur3bedf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.climbtogether",
+            "certificate_hash": "cd9ddfd9211c7fab83544c9b3dca4b1b95cbbc4e"
+          }
+        },
+        {
+          "client_id": "1031259210657-0sktsclef7tjcnlpqaed3hco7qhri8ur.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNCBBm3vfzy9yTZT50dGlOdvFkWO7n0Kk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031259210657-0sktsclef7tjcnlpqaed3hco7qhri8ur.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
