@@ -14,6 +14,7 @@ public class Gym {
 
     //요건다시보기
     private Problem gymProblem;
+    public Gym() {}
 
     public Gym(String gymName, String gymLocation, int gymPhotoResourceId, String gymContact, int gymPrice) {
         this.gymName = gymName;

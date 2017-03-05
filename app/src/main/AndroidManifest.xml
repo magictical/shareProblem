@@ -15,10 +15,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
             android:name=".GymResister"
             android:label="Resister Your Gym"/>
+        <activity android:name=".ProblemActivity">
+        </activity>
+        <activity android:name=".ProblemResister">
+        </activity>
     </application>
 
 </manifest>

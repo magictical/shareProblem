@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tool="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/problem_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:scaleType="fitCenter"
+        tool:src="@drawable/gym_photo"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_problem_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tool:text="Problem name"/>
+
+        <TextView
+            android:id="@+id/text_problem_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tool:text="V1"/>
+
+        <TextView
+            android:id="@+id/text_problem_creator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tool:text="매지기"/>
+
+        <TextView
+            android:id="@+id/text_problem_finisher_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tool:text="완등자 목록"/>
+
+        <TextView
+            android:id="@+id/text_problem_challenger_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tool:text="도전자 목록"/>
+
+        <TextView
+            android:id="@+id/text_problem_expireday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tool:text="4월까지 / 몇일 남음 중하나로 표기"/>
+    </LinearLayout>
+
+
+</LinearLayout>

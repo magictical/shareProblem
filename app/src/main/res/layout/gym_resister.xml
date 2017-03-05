@@ -48,7 +48,7 @@
         android:id="@+id/resister_title_gym_photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Gym Location"/>
+        android:text="Gym Photo"/>
     <EditText
         android:id="@+id/resister_gym_photo"
         android:layout_width="match_parent"
@@ -58,9 +58,9 @@
 
 
     <Button
-        android:id="@+id/check_gym_name"
+        android:id="@+id/add_gym"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="click here"/>
+        android:text="Add a Gym"/>
 
 </LinearLayout>
