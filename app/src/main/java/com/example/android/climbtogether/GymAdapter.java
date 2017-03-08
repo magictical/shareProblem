@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.bumptech.glide.Glide;
 
-import static android.R.id.list;
+import java.util.ArrayList;
 
 /**
  * Created by MD on 2017-02-14.
@@ -37,7 +37,9 @@ public class GymAdapter extends ArrayAdapter<Gym> {
 
         //set Gym photo
         ImageView gymImage = (ImageView) listScraps.findViewById(R.id.gym_image_view);
-        gymImage.setImageResource(currentGym.getGymPhotoResourceId());
+        Glide.with(gymImage.getContext())
+                .load(currentGym.getGymPhotoUri())
+                .into(gymImage);
 
         //set Gym name
         TextView gymName = (TextView) listScraps.findViewById(R.id.text_gym_name);

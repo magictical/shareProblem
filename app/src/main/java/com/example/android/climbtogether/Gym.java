@@ -9,17 +9,17 @@ public class Gym {
     private String gymLocation;
     private String gymContact;
     private int gymPrice;
-    private int gymPhotoResourceId;
+    private String gymPhotoUri;
 
 
     //요건다시보기
     private Problem gymProblem;
     public Gym() {}
 
-    public Gym(String gymName, String gymLocation, int gymPhotoResourceId, String gymContact, int gymPrice) {
+    public Gym(String gymName, String gymLocation, String gymPhotoUri, String gymContact, int gymPrice) {
         this.gymName = gymName;
         this.gymLocation = gymLocation;
-        this.gymPhotoResourceId = gymPhotoResourceId;
+        this.gymPhotoUri = gymPhotoUri;
         this.gymContact = gymContact;
         this.gymPrice = gymPrice;
     }
@@ -40,12 +40,12 @@ public class Gym {
         this.gymLocation = gymLocation;
     }
 
-    public int getGymPhotoResourceId() {
-        return gymPhotoResourceId;
+    public String getGymPhotoUri() {
+        return gymPhotoUri;
     }
 
-    public void setGymPhotoResourceId(int gymPhotoResourceId) {
-        this.gymPhotoResourceId = gymPhotoResourceId;
+    public void setGymPhotoUri(String gymPhotoUri) {
+        this.gymPhotoUri = gymPhotoUri;
     }
 
     public String getGymContact() {

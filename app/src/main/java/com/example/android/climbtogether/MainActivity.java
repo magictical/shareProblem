@@ -12,6 +12,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -23,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     //add FireBaseDatabase
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mGymDatabaseReference;
+
+
 
     //child Listener
     ChildEventListener mChildEventListener;
@@ -42,16 +46,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         final ArrayList<Gym> gym = new ArrayList<Gym>();
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym_photo, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym2, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym3, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym4, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym5, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym6, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym7, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym8, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym9, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", R.drawable.gym10, "010-1010-1010", 10000));
+        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
+        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
+        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
+        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
+        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
+        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
+        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
+
 
         mGymAdapter = new GymAdapter(this, gym);
 
