@@ -4,9 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -24,74 +25,36 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 1;
 
-    GymAdapter mGymAdapter;
-    Button mGymResister;
-    Button mMoveToProblemList;
+    private GymAdapter mGymAdapter;
 
-    //add FireBaseDatabase
-    FirebaseDatabase mFirebaseDatabase;
-    DatabaseReference mGymDatabaseReference;
     //add Firebase Auth
-    FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth mFirebaseAuth;
     //add Firebase Auth Listener
-    FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-
+    protected FirebaseDatabase mFirebaseDatabase;
+    protected DatabaseReference mGymDatabaseReference;
 
     //child Listener
-    ChildEventListener mChildEventListener;
+    protected ChildEventListener mChildEventListener;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.gym_list);
-
-        //Access point of database
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        //A reference to get a specific part of database
-        mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
+        setContentView(R.layout.activity_main);
 
         //Firebase Auth instance
         mFirebaseAuth = FirebaseAuth.getInstance();
 
+        //Access point of DB
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        //reference of DB
+        mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
 
-
-        final ArrayList<Gym> gym = new ArrayList<Gym>();
-        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
-        gym.add(new Gym("RockOdyssey", "busan", null, "010-1010-1010", 10000));
-
-
+        ArrayList<Gym> gym = new ArrayList<Gym>();
         mGymAdapter = new GymAdapter(this, gym);
-
-        ListView listView = (ListView) findViewById(R.id.gym_list);
-
-        listView.setAdapter(mGymAdapter);
-
-        mGymResister = (Button) findViewById(R.id.resister_gym_button);
-        mGymResister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent gymResisterIntent = new Intent(MainActivity.this, GymResister.class);
-                startActivity(gymResisterIntent);
-
-            }
-        });
-
-        mMoveToProblemList = (Button) findViewById(R.id.move_to_problem_list);
-        mMoveToProblemList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent problemIntent = new Intent(MainActivity.this, ProblemActivity.class);
-                startActivity(problemIntent);
-            }
-        } );
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -109,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivityForResult(
                             AuthUI.getInstance()
                             .createSignInIntentBuilder()
+                            .setIsSmartLockEnabled(false)
                             .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
                                                         new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
                             .build(),
@@ -180,5 +144,24 @@ public class MainActivity extends AppCompatActivity {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
         detachDatabaseListener();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sign_out_menu :
+                //sign out
+                AuthUI.getInstance().signOut(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
