@@ -48,37 +48,6 @@ public class ProblemActivity extends AppCompatActivity {
 
     final ArrayList<Problem> problems = new ArrayList<Problem>();
 
-        problems.add(new Problem("RockOdyssey", R.drawable.gym_photo, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym2, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym3, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym4, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym5, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym6, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym7, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym8, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym9, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym10, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym2, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym3, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym4, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym5, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-        problems.add(new Problem("RockOdyssey", R.drawable.gym6, "V1", "만든사람 : 매지기",
-                "완등자 : 매지기", "시도중인사람 : 매지기", "만료날짜 : 4월까지"));
-
         mProblemAdapter = new ProblemAdapter(this, problems);
         ListView listview = (ListView) findViewById(R.id.problem_list);
         listview.setAdapter(mProblemAdapter);
