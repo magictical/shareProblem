@@ -48,8 +48,11 @@ dependencies {
     compile 'com.google.firebase:firebase-database:10.2.0'
     //Firebase storage
     compile 'com.google.firebase:firebase-storage:10.2.0'
-
+    //Firebase UI
     compile 'com.firebaseui:firebase-ui-auth:1.2.0'
+
+    //Google Map
+    compile 'com.google.android.gms:play-services-maps:10.2.0'
 
     compile 'com.android.support:support-v4:25.2.0'
     testCompile 'junit:junit:4.12'

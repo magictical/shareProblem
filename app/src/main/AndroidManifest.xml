@@ -2,7 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           package="com.example.android.climbtogether">
+    <!--OpenGl 사용을 명시하고 OpenGl이 지원되지 않는 기기에서 이앱을 필터링해줌-->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
@@ -12,6 +18,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
+
+        <!--google map API 버전 및 API Key 설정-->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyBBl-b0pYV5a_oqfRSZoWxOAHYXY355hVY"/>
+
+
         <activity
             android:name=".activity.MainActivity"
             android:label="ClimbTogether"

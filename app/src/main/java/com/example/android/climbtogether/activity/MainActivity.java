@@ -111,8 +111,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Navigation view header
         navHeader = mNavigationView.getHeaderView(0);
+        //메뉴상단의 이름 Ian Kim으로 된 부분
         txtName = (TextView) navHeader.findViewById(R.id.name);
+        //웹사이트 주소 적힌 부분
         txtWebsite = (TextView) navHeader.findViewById(R.id.website);
+
         imgNavHeaderBg = (ImageView) navHeader.findViewById(R.id.img_header_bg);
         imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
 
