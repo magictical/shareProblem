@@ -1,13 +1,21 @@
 package com.example.android.climbtogether.fragment;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.android.climbtogether.Manifest;
+import com.example.android.climbtogether.PermissionUtils;
 import com.example.android.climbtogether.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,7 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements OnMapReadyCallback {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,6 +46,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
     //use google maps
     private GoogleMap gMap;
+
+    /**
+     * Request code for location permission request.
+     *
+     * @see #onRequestPermissionsResult(int, String[], int[])
+     */
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
+    /**
+     * Flag indicating whether a requested permission has been denied after returning in
+     * {@link #onRequestPermissionsResult(int, String[], int[])}
+     */
+    private boolean mPermissionDenied = false;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -109,7 +130,49 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         LatLng home = new LatLng(-33.852, 151.211);
         CameraPosition position = CameraPosition.builder().target(home).zoom(12).build();
         gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+
+        gMap.setOnMyLocationButtonClickListener(this);
+        enableMyLocation();
     }
+
+    /**
+     * Enable the My Location layer if the fine location permission has been granted
+     */
+    private void enableMyLocation() {
+        if(ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        } else if (gMap != null){
+            //Access to the location has been granted to the app
+            gMap.setMyLocationEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Toast.makeText(getContext(), "MyLocation button click", Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            //return이 실행되면 현재메소드 onRequestPermissionResult 가 종료되고 나머지 line 은
+            // 실행되지 않는다
+            return;
+        }
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            // Enable the my location layer if the permission has been granted.
+            enableMyLocation();
+        } else {
+            // Display the missing permission error dialog when the fragments resume.
+            mPermissionDenied = true;
+        }
+    }
+
+
 
     /**
      * This interface must be implemented by activities that contain this
