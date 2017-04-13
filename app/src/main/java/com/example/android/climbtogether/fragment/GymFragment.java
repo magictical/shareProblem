@@ -12,6 +12,7 @@ import android.widget.ListView;
 import com.example.android.climbtogether.Gym;
 import com.example.android.climbtogether.GymAdapter;
 import com.example.android.climbtogether.R;
+import com.example.android.climbtogether.activity.GymResister;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,9 +50,6 @@ public class GymFragment extends Fragment {
         //reference point of DB
         mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
 
-        attachDatabaseListener();
-
-
         //add new Gym ArrayList
         ArrayList<Gym> gym = new ArrayList<Gym>();
         mGymAdapter = new GymAdapter(getActivity(), gym);
@@ -64,18 +62,11 @@ public class GymFragment extends Fragment {
         mGymResister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent problemIntent = new Intent(getActivity(), ProblemActivity.class);
+                Intent problemIntent = new Intent(getActivity(), GymResister.class);
                 startActivity(problemIntent);
             }
         });
-        mProblemResister = (Button) rootView.findViewById(R.id.move_to_problem_list);
-        mProblemResister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ProblemActivity.class);
-                startActivity(intent);
-            }
-        });
+        attachDatabaseListener();
         return rootView;
     }
 

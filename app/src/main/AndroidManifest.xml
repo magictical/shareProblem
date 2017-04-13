@@ -44,7 +44,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name=".fragment.ProblemActivity"
+            android:name=".fragment.ProblemFragment"
             android:label="Check the Problems In the Gym">
         </activity>
         <activity

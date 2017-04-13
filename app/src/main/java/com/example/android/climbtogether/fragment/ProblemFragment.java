@@ -1,9 +1,13 @@
 package com.example.android.climbtogether.fragment;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -19,7 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
-public class ProblemActivity extends AppCompatActivity {
+public class ProblemFragment extends Fragment {
     ProblemAdapter mProblemAdapter;
     Button mAddProblem;
 
@@ -31,9 +35,9 @@ public class ProblemActivity extends AppCompatActivity {
     ChildEventListener mChildEventListener;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.problem_list);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.problem_list, container, false);
 
         //add Access point of Firebase Database
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -41,22 +45,22 @@ public class ProblemActivity extends AppCompatActivity {
 
 
 
-        mAddProblem = (Button) findViewById(R.id.resister_problem_button);
+        mAddProblem = (Button) rootView.findViewById(R.id.resister_problem_button);
         mAddProblem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent problemResisterIntent = new Intent(ProblemActivity.this, ProblemResister.class);
-                startActivity(problemResisterIntent);
+                Intent problemResisterIntent = new Intent(getActivity(), ProblemResister.class);
+                getActivity().startActivity(problemResisterIntent);
             }
         });
 
-    final ArrayList<Problem> problems = new ArrayList<Problem>();
-
-        mProblemAdapter = new ProblemAdapter(this, problems);
-        ListView listview = (ListView) findViewById(R.id.problem_list);
+        ArrayList<Problem> problems = new ArrayList<Problem>();
+        mProblemAdapter = new ProblemAdapter(getContext(), problems);
+        ListView listview = (ListView) rootView.findViewById(R.id.problem_list);
         listview.setAdapter(mProblemAdapter);
 
         attachDatabaseListener();
+        return rootView;
     }
 
 

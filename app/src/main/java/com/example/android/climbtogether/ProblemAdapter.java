@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class ProblemAdapter extends ArrayAdapter<Problem> {
     private Context saveContext;
 
-    //ProblemActivity Context를 받아서 생성자에게 전달
+    //ProblemFragment Context를 받아서 생성자에게 전달
     public ProblemAdapter(Context context, ArrayList<Problem> problem) {
         super(context, 0, problem);
         saveContext = context;
