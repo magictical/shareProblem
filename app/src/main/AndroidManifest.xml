@@ -39,16 +39,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GymResister"
+            android:name=".activity.GymResister"
             android:label="Resister Your Gym"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name=".ProblemActivity"
+            android:name=".fragment.ProblemActivity"
             android:label="Check the Problems In the Gym">
         </activity>
         <activity
-            android:name=".ProblemResister"
+            android:name=".activity.ProblemResister"
             android:label="Add your Problems">
         </activity>
     </application>

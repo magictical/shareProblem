@@ -1,4 +1,4 @@
-package com.example.android.climbtogether;
+package com.example.android.climbtogether.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.android.climbtogether.Gym;
+import com.example.android.climbtogether.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;

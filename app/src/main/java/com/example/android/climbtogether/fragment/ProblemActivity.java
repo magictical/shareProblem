@@ -1,4 +1,4 @@
-package com.example.android.climbtogether;
+package com.example.android.climbtogether.fragment;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.example.android.climbtogether.Problem;
+import com.example.android.climbtogether.ProblemAdapter;
+import com.example.android.climbtogether.R;
+import com.example.android.climbtogether.activity.ProblemResister;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

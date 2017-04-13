@@ -11,8 +11,12 @@ import android.widget.ListView;
 
 import com.example.android.climbtogether.Gym;
 import com.example.android.climbtogether.GymAdapter;
-import com.example.android.climbtogether.ProblemActivity;
 import com.example.android.climbtogether.R;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -29,9 +33,23 @@ public class GymFragment extends Fragment {
     //Add Problem button
     Button mProblemResister;
 
+    //add FireBaseDatabase
+    FirebaseDatabase mFirebaseDatabase;
+    DatabaseReference mGymDatabaseReference;
+
+    //child Listener
+    private ChildEventListener mChildEventListener;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.gym_list, container, false);
+
+        //Access point of DB
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        //reference point of DB
+        mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
+
+        attachDatabaseListener();
 
 
         //add new Gym ArrayList
@@ -59,5 +77,50 @@ public class GymFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    //리스트가 갱신될때 DB에서 새 data를 업데이트 하기위한 리스너
+    //!! 중요 라이프사이클에 Listener를 꺼주는 옵션도 줘야 자원절약
+    private void attachDatabaseListener() {
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Gym gym = dataSnapshot.getValue(Gym.class);
+                    mGymAdapter.add(gym);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            };
+            mGymDatabaseReference.addChildEventListener(mChildEventListener);
+        }
+    }
+
+    private void detachDatabaseListener() {
+        if (mChildEventListener != null) {
+            mGymDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        detachDatabaseListener();
     }
 }
