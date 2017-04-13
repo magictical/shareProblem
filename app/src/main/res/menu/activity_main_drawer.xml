@@ -7,11 +7,11 @@
                android:icon="@drawable/ic_home_black_24dp"
                android:title="@string/nav_home"/>
         <item
-                android:id="@+id/nav_photos"
+                android:id="@+id/nav_find_climbing_gym"
                 android:icon="@drawable/ic_photo_library_black_24dp"
                 android:title="@string/nav_photos"/>
         <item
-                android:id="@+id/nav_movies"
+                android:id="@+id/nav_find_problems"
                 android:icon="@drawable/ic_local_movies_black_24dp"
                 android:title="@string/nav_movies"/>
         <item

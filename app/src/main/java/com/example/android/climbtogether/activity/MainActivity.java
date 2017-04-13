@@ -28,6 +28,7 @@ import com.example.android.climbtogether.GymAdapter;
 import com.example.android.climbtogether.R;
 import com.example.android.climbtogether.fragment.GymFragment;
 import com.example.android.climbtogether.fragment.HomeFragment;
+import com.example.android.climbtogether.fragment.ProblemFragment;
 import com.example.android.climbtogether.other.CircleTransform;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
-    private static final String TAG_PHOTOS = "photos";
-    private static final String TAG_MOVIES = "movies";
+    private static final String TAG_FIND_CLIMBING_GYM = "find climbing gym";
+    private static final String TAG_FIND_PROBLEMS = "find problems";
     private static final String TAG_NOTIFICATIONS = "notifications";
     private static final String TAG_SETTINGS = "settings";
     public static String CURRENT_TAG = TAG_HOME;
@@ -315,18 +316,23 @@ public class MainActivity extends AppCompatActivity {
         //reflresh toolbar menu
         invalidateOptionsMenu();
     }
-    //경우에 따라 어떤 fragment를 열지 결정
+    //경우에 따라 어떤 fragment 를 열지 결정
     private  Fragment getHomeFragment() {
         switch (navItemIndex) {
             case 0:
-                //home
+                //open HomeFragment
                 HomeFragment homeFragment = new HomeFragment();
                 return homeFragment;
 
             case 1:
-                //gym fragment
+                //open GymFragment
                 GymFragment gymFragment = new GymFragment();
                 return gymFragment;
+
+            case 2:
+                //open ProblemFragment
+                ProblemFragment problemFragment = new ProblemFragment();
+                return problemFragment;
             default:
                 return new HomeFragment();
         }
@@ -376,10 +382,16 @@ public class MainActivity extends AppCompatActivity {
                         navItemIndex = 0;
                         CURRENT_TAG = TAG_HOME;
                         break;
-                    case R.id.nav_photos:
+                    case R.id.nav_find_climbing_gym:
                         navItemIndex = 1;
-                        CURRENT_TAG = TAG_MOVIES;
+                        CURRENT_TAG = TAG_FIND_CLIMBING_GYM;
                         break;
+
+                    case  R.id.nav_find_problems:
+                        navItemIndex = 2;
+                        CURRENT_TAG = TAG_FIND_PROBLEMS;
+                        break;
+                    //activity 시작할경우는 아래처럼
     /*                case R.id.nav_about_us:
                         startActivity(new Intent(MainActivity.this, OtherActivity.class));
                         mDrawer.closeDrawers();
