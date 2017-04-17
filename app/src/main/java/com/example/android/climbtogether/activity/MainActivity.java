@@ -126,7 +126,9 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(v, "replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Intent intentResisterGym = new Intent(MainActivity.this, GymResister.class);
+                startActivity(intentResisterGym);
+                /*Snackbar.make(v, "replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();*/
 
             }
         });
