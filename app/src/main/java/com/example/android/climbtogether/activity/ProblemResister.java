@@ -85,21 +85,5 @@ public class ProblemResister extends AppCompatActivity {
 
             }
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }

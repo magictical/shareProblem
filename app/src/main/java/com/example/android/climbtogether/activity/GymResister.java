@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,7 @@ import java.io.InputStream;
  * Created by MD on 2017-02-16.
  */
 
-public class GymResister extends Activity {
+public class GymResister extends AppCompatActivity {
     //Constant for photo select requestCode
     public static final int RC_SELECT_PHOTO = 100;
     //Constant for photo upload to storage requestCode
