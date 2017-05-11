@@ -107,8 +107,7 @@ public class GymResister extends AppCompatActivity {
         mPhotoResource = (ImageView) findViewById(R.id.resister_gym_photo_image_view);
         mSelectImageButton = (Button) findViewById(R.id.resister_gym_load_image_button);
 
-
-
+        //add listener to image button
         mSelectImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

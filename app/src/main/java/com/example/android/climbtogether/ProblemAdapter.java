@@ -1,13 +1,14 @@
 package com.example.android.climbtogether;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -36,7 +37,9 @@ public class ProblemAdapter extends ArrayAdapter<Problem> {
 
         //set Problem photo
         ImageView problemImage = (ImageView) listScraps.findViewById(R.id.problem_image_view);
-        problemImage.setImageResource(currentProblem.getProblemPhotoResourceId());
+        Glide.with(problemImage.getContext())
+                .load(currentProblem.getProblemPhotoUri())
+                .into(problemImage);
 
         //set Problem name
         TextView problemName = (TextView) listScraps.findViewById(R.id.text_problem_name);

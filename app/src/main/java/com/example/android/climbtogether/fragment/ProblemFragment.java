@@ -20,6 +20,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -31,6 +33,10 @@ public class ProblemFragment extends Fragment {
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mProblemDatabaseReference;
 
+    //add FirebaseStorage
+    FirebaseStorage mFirebaseStorage;
+    StorageReference mProblemStorageReference;
+
     //child DB listener
     ChildEventListener mChildEventListener;
 
@@ -39,10 +45,13 @@ public class ProblemFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.problem_list, container, false);
 
-        //add Access point of Firebase Database
+        //add Access point of FirebaseDatabase
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data");
 
+        //add Access point of FirebaseStorage
+        mFirebaseStorage = FirebaseStorage.getInstance();
+        mProblemStorageReference = mFirebaseStorage.getReference().child("problem_photos");
 
 
         mAddProblem = (Button) rootView.findViewById(R.id.resister_problem_button);
@@ -55,11 +64,11 @@ public class ProblemFragment extends Fragment {
         });
 
         ArrayList<Problem> problems = new ArrayList<Problem>();
-        mProblemAdapter = new ProblemAdapter(getContext(), problems);
+        mProblemAdapter = new ProblemAdapter(getActivity(), problems);
         ListView listview = (ListView) rootView.findViewById(R.id.problem_list);
         listview.setAdapter(mProblemAdapter);
 
-        attachDatabaseListener();
+
         return rootView;
     }
 
@@ -97,5 +106,22 @@ public class ProblemFragment extends Fragment {
         }
     }
 
+    private void detachDatabaseListener() {
+        if (mChildEventListener != null) {
+            mProblemDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
+        }
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        attachDatabaseListener();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        detachDatabaseListener();
+    }
 }

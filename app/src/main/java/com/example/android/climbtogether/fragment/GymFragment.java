@@ -62,13 +62,6 @@ public class GymFragment extends Fragment {
         mGymStorageReference = mFirebaseStorage.getReference().child("problem_photos");
         Log.v(TAG, "access to Storage");
 
-        //add new Gym ArrayList
-        ArrayList<Gym> gym = new ArrayList<Gym>();
-        mGymAdapter = new GymAdapter(getActivity(), gym);
-
-        //Bind ListView
-        ListView list = (ListView) rootView.findViewById(R.id.gym_list);
-        list.setAdapter(mGymAdapter);
 
         mGymResister = (Button) rootView.findViewById(R.id.resister_gym_button);
         mGymResister.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +71,16 @@ public class GymFragment extends Fragment {
                 startActivity(problemIntent);
             }
         });
+
+        //add new Gym ArrayList
+        ArrayList<Gym> gym = new ArrayList<Gym>();
+        mGymAdapter = new GymAdapter(getActivity(), gym);
+
+        //Bind ListView
+        ListView list = (ListView) rootView.findViewById(R.id.gym_list);
+        list.setAdapter(mGymAdapter);
+
+
         return rootView;
     }
 
