@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     protected DatabaseReference mGymDatabaseReference;
 
     //child Listener
-    protected ChildEventListener mChildEventListener;
+    /*protected ChildEventListener mChildEventListener;*/
 
 
     @Override
@@ -166,13 +166,8 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     //handle the signed in user
-                    //리스트를 업데이트하면 DB에서 Gym data를 가져오는 리스너 Auth후에 DB접근 가능하도록 설정
-                    attachDatabaseListener();
                 } else {
                     //handle the signed out user
-                    //ChildEventListener 제거로 DB에서 접속 불가로만듬
-                    //리스트를 업데이트하면 DB에서 Gym data를 가져오는 리스너
-                    detachDatabaseListener();
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
@@ -197,45 +192,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "you signed out see you next time", Toast.LENGTH_SHORT).show();
                 finish();
             }
-        }
-    }
-
-    //리스트가 갱신될때 DB에서 새 data를 업데이트 하기위한 리스너
-    //!! 중요 라이프사이클에 Listener를 꺼주는 옵션도 줘야 자원절약
-    private void attachDatabaseListener() {
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Gym gym = dataSnapshot.getValue(Gym.class);
-                    mGymAdapter.add(gym);
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            };
-            mGymDatabaseReference.addChildEventListener(mChildEventListener);
-        }
-    }
-
-    private void detachDatabaseListener() {
-        if (mChildEventListener != null) {
-            mGymDatabaseReference.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
         }
     }
 
@@ -446,7 +402,6 @@ public class MainActivity extends AppCompatActivity {
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
-        detachDatabaseListener();
     }
 
     @Override

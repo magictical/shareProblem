@@ -1,8 +1,10 @@
 package com.example.android.climbtogether.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -26,6 +30,7 @@ import java.util.ArrayList;
  */
 
 public class GymFragment extends Fragment {
+    public static final String TAG = GymFragment.class.getName();
 
     GymAdapter mGymAdapter;
 
@@ -38,6 +43,9 @@ public class GymFragment extends Fragment {
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mGymDatabaseReference;
 
+    FirebaseStorage mFirebaseStorage;
+    StorageReference mGymStorageReference;
+
     //child Listener
     private ChildEventListener mChildEventListener;
 
@@ -49,6 +57,10 @@ public class GymFragment extends Fragment {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         //reference point of DB
         mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
+
+        mFirebaseStorage = FirebaseStorage.getInstance();
+        mGymStorageReference = mFirebaseStorage.getReference().child("problem_photos");
+        Log.v(TAG, "access to Storage");
 
         //add new Gym ArrayList
         ArrayList<Gym> gym = new ArrayList<Gym>();
@@ -66,7 +78,6 @@ public class GymFragment extends Fragment {
                 startActivity(problemIntent);
             }
         });
-        attachDatabaseListener();
         return rootView;
     }
 
@@ -107,6 +118,12 @@ public class GymFragment extends Fragment {
             mGymDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        attachDatabaseListener();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.example.android.climbtogether.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,7 +39,8 @@ public class GymResister extends AppCompatActivity {
 
     private String gymName;
     private String gymLocation;
-    private String gymPhotoUriToString;
+    //필요없어보인다
+    //private String gymPhotoUriToString;
     private String gymContact;
     private int gymPrice;
 
@@ -54,7 +54,7 @@ public class GymResister extends AppCompatActivity {
 
     private Button mAddGymButton;
     //button for select image
-    private Button mSelectimage;
+    private Button mSelectImageButton;
 
     //add FireBase Database instances
     private FirebaseDatabase mFirebaseDatabase;
@@ -64,9 +64,8 @@ public class GymResister extends AppCompatActivity {
     FirebaseStorage mFirebaseStorage;
     StorageReference mGymStorageReferences;
 
-    private StorageReference presentGymPhotoRef;
-
     private String gymPhotoUri;
+
     private Uri selectedImgUri;
 
     @Override
@@ -105,9 +104,12 @@ public class GymResister extends AppCompatActivity {
         mEditGymPrice = (EditText) findViewById(R.id.resister_gym_price);
 
         //select img from sd card using by Intent and display img
-        mPhotoResource = (ImageView) findViewById(R.id.resister_gym_photo);
-        mSelectimage = (Button) findViewById(R.id.resister_gym_load_image_button);
-        mSelectimage.setOnClickListener(new View.OnClickListener() {
+        mPhotoResource = (ImageView) findViewById(R.id.resister_gym_photo_image_view);
+        mSelectImageButton = (Button) findViewById(R.id.resister_gym_load_image_button);
+
+
+
+        mSelectImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent photoSelectorIntent = new Intent(Intent.ACTION_PICK);
@@ -123,34 +125,6 @@ public class GymResister extends AppCompatActivity {
             public void onClick(View view) {
                 //Add 버튼을 누르면 업로드를 하고 업로드된 사진의 uri를 갱신함
                 uploadPhotoToStorage();
-
-                gymName = mEditGymName.getText().toString();
-                gymLocation = mEditGymLocation.getText().toString();
-                gymContact = mEditGymContact.getText().toString();
-                //upload된 사진의 uri가 사용됨
-                gymPhotoUriToString = gymPhotoUri;
-
-                try{
-                    gymPrice = Integer.valueOf(mEditGymPrice.getText().toString());
-
-                    /*gymPhotoUriToString = Integer.parseInt(mPhotoResource.getText().toString());*/
-                } catch (Exception e) {
-                    if(mEditGymPrice.getText().toString().equals("") || mPhotoResource.equals("")) {
-                        Toast.makeText(GymResister.this, "가격을 입력해주세요(필수)",Toast.LENGTH_SHORT).show();
-                    }
-                    e.printStackTrace();
-                }
-                Gym gym = new Gym(gymName, gymLocation, gymPhotoUriToString, gymContact, gymPrice);
-                mGymDatabaseReference.push().setValue(gym);
-
-                    Log.v(LOG_TAG, "gym name is " + gymName + "\n"
-                            + "gym Location is" + gymLocation + "\n"
-                            + "gym Contact is" + gymContact + "\n"
-                            + "gym Price is " + gymPrice + "\n"
-                            + "gym Photo is not ready" + gymPhotoUriToString);
-
-                    Toast.makeText(GymResister.this, gymName + " " + gymLocation+ " " + gymContact
-                            + gymPrice+ " "+ gymPhotoUriToString, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -172,6 +146,7 @@ public class GymResister extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     Bitmap yourselectedImage = BitmapFactory.decodeStream(imageStream);
+                    //아마 사용되지 않을 라인일듯하다. 확인할것
                     mPhotoResource.setImageURI(selectedImgUri);
                 }
         }
@@ -193,7 +168,7 @@ public class GymResister extends AppCompatActivity {
 
     public void uploadPhotoToStorage() {
         //현재 선택한 photo의 ref
-        presentGymPhotoRef =
+        StorageReference presentGymPhotoRef =
                 mGymStorageReferences.child(selectedImgUri.getLastPathSegment());
         //Upload file to Firebase Storage
         presentGymPhotoRef.putFile(selectedImgUri)
@@ -202,9 +177,40 @@ public class GymResister extends AppCompatActivity {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Uri downloadUri = taskSnapshot.getDownloadUrl();
                         //save gymPhoto Uri to instance
+
                         gymPhotoUri = downloadUri.toString();
-                        Log.v(LOG_TAG, "gymPhotoUriToString Value is " + gymPhotoUriToString);
+                        gymName = mEditGymName.getText().toString();
+                        gymLocation = mEditGymLocation.getText().toString();
+                        gymContact = mEditGymContact.getText().toString();
+
+                /*Log.v(LOG_TAG, "gymPhotoUri is " + gymPhotoUri);
+                Log.v(LOG_TAG, "downloadUrl is " + downloadUri.toString());
+
+                gymPhotoUri = downloadUri.toString();*/
+                        //upload된 사진의 uri가 사용됨
+
+                        try{
+                            gymPrice = Integer.valueOf(mEditGymPrice.getText().toString());
+
+                        } catch (Exception e) {
+                            if(mEditGymPrice.getText().toString().equals("") || mPhotoResource.equals("")) {
+                                Toast.makeText(GymResister.this, "가격을 입력해주세요(필수)",Toast.LENGTH_SHORT).show();
+                            }
+                            e.printStackTrace();
+                        }
+                        Gym gym = new Gym(gymName, gymLocation, gymPhotoUri, gymContact, gymPrice);
+                        mGymDatabaseReference.push().setValue(gym);
+
+                        Log.v(LOG_TAG, "gym name is " + gymName + "\n"
+                                + "gym Location is" + gymLocation + "\n"
+                                + "gym Contact is" + gymContact + "\n"
+                                + "gym Price is " + gymPrice + "\n"
+                                + "gym Photo is not ready" + gymPhotoUri);
+
+                        Toast.makeText(GymResister.this, gymName + " " + gymLocation+ " " + gymContact
+                                + gymPrice+ " "+ gymPhotoUri, Toast.LENGTH_SHORT).show();
                     }
                 });
+
     }
 }
