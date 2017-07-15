@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     // urls to load navigation header background image
     // and profile image
     private static final String urlNavHeaderBg = "http://api.androidhive.info/images/nav-menu-header-bg.jpg";
-    private static final String urlProfileImg = "https://lh3.googleusercontent.com/eCtE_G34M9ygdkmOpYvCag1vBARCmZwnVS6rS5t4JLzJ6QgQSBquM0nuTsCpLhYbKljoyS-txg";
+    private static final String urlProfileImg = "https://scontent-hkg3-2.xx.fbcdn.net/v/t1.0-9/163777_143173549071592_1853772_n.jpg?oh=32b527c605847e9037d2e5cdab9953a8&oe=59CA65FA";
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
     private  void loadNavHeader() {
         //name, website
         txtName.setText("Ian Kim");
-        txtWebsite.setText("www.notyet.com");
+        txtWebsite.setText("www.ClimbTogether.com");
 
         //loading header background image
         Glide.with(this).load(urlNavHeaderBg)

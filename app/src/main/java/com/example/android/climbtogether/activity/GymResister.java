@@ -201,10 +201,10 @@ public class GymResister extends AppCompatActivity {
                         mGymDatabaseReference.push().setValue(gym);
 
                         Log.v(LOG_TAG, "gym name is " + gymName + "\n"
-                                + "gym Location is" + gymLocation + "\n"
-                                + "gym Contact is" + gymContact + "\n"
+                                + "gym Location is " + gymLocation + "\n"
+                                + "gym Contact is " + gymContact + "\n"
                                 + "gym Price is " + gymPrice + "\n"
-                                + "gym Photo is not ready" + gymPhotoUri);
+                                + "gym Photo is " + gymPhotoUri);
 
                         Toast.makeText(GymResister.this, gymName + " " + gymLocation+ " " + gymContact
                                 + gymPrice+ " "+ gymPhotoUri, Toast.LENGTH_SHORT).show();

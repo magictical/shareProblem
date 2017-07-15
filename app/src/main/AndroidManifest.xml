@@ -52,6 +52,8 @@
         </activity>
         <activity android:name=".activity.MyHistoryActivity">
         </activity>
+        <activity android:name=".activity.UserProfile">
+        </activity>
     </application>
 
 </manifest>

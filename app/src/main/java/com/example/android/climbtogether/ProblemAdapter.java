@@ -12,6 +12,8 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+import static android.R.id.list;
+
 /**
  * Created by MD on 2017-03-01.
  */
@@ -44,6 +46,10 @@ public class ProblemAdapter extends ArrayAdapter<Problem> {
         //set Problem name
         TextView problemName = (TextView) listScraps.findViewById(R.id.text_problem_name);
         problemName.setText(currentProblem.getProblemName());
+
+        //set Problem Level
+        TextView problemlevel = (TextView) listScraps.findViewById(R.id.text_problem_level);
+        problemlevel.setText(currentProblem.getProblemLevel());
 
         //set Problem creator
         TextView problemCreator = (TextView) listScraps.findViewById(R.id.text_problem_creator);
