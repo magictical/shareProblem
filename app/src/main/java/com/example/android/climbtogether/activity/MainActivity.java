@@ -230,6 +230,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Fragment fragment = getHomeFragment();
+                //플래그먼트로 데이터 보내보기 시험 - 가능함
+//                if(fragment instanceof ProblemFragment) {
+//                    ((ProblemFragment) fragment).passAuth("i sent", mFirebaseAuth, mAuthStateListener);
+//                }
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
                 fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);

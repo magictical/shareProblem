@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.example.android.climbtogether.Problem;
 import com.example.android.climbtogether.ProblemAdapter;
 import com.example.android.climbtogether.R;
 import com.example.android.climbtogether.activity.ProblemResister;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +28,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 
 public class ProblemFragment extends Fragment {
+
+    public final String LOG_TAG = ProblemFragment.class.getName();
     ProblemAdapter mProblemAdapter;
     Button mAddProblem;
 
@@ -68,9 +72,16 @@ public class ProblemFragment extends Fragment {
         ListView listview = (ListView) rootView.findViewById(R.id.problem_list);
         listview.setAdapter(mProblemAdapter);
 
-
         return rootView;
+
+
     }
+
+//    public void passAuth(String sendMsg, FirebaseAuth auth, FirebaseAuth.AuthStateListener listener) {
+//        check = sendMsg;
+//        mFirebaseAuth = auth;
+//        mAuthStateListener = listener;
+//    }
 
 
     private void attachDatabaseListener() {
