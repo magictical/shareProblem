@@ -75,23 +75,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean shouldLoadHomeFragOnBackPress = true;
     private android.os.Handler mHandler;
 
-
-    ///////////
     private static final int RC_SIGN_IN = 1;
-
-    private GymAdapter mGymAdapter;
 
     //add Firebase Auth
     private FirebaseAuth mFirebaseAuth;
     //add Firebase Auth Listener
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-
-    protected FirebaseDatabase mFirebaseDatabase;
-    protected DatabaseReference mGymDatabaseReference;
-
-    //child Listener
-    /*protected ChildEventListener mChildEventListener;*/
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentResisterGym = new Intent(MainActivity.this, GymResister.class);
                 startActivity(intentResisterGym);
                 /*Snackbar.make(v, "replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();*/
-
             }
         });
 
@@ -145,20 +133,8 @@ public class MainActivity extends AppCompatActivity {
             loadHomeFragment();
         }
 
-
-
-
-
         //Firebase Auth instance
         mFirebaseAuth = FirebaseAuth.getInstance();
-
-        //Access point of DB
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        //reference of DB
-        mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
-
-        ArrayList<Gym> gym = new ArrayList<Gym>();
-        mGymAdapter = new GymAdapter(this, gym);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
