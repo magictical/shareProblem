@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,20 +60,6 @@ public class GymFragment extends Fragment {
         //reference point of DB
         mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
 
-        mFirebaseStorage = FirebaseStorage.getInstance();
-        mGymStorageReference = mFirebaseStorage.getReference().child("problem_photos");
-        Log.v(TAG, "access to Storage");
-
-
-        mGymResister = (Button) rootView.findViewById(R.id.resister_gym_button);
-        mGymResister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent problemIntent = new Intent(getActivity(), GymResister.class);
-                startActivity(problemIntent);
-            }
-        });
-
         //add new Gym ArrayList
         ArrayList<Gym> gym = new ArrayList<Gym>();
         mGymAdapter = new GymAdapter(getActivity(), gym);
@@ -81,6 +68,16 @@ public class GymFragment extends Fragment {
         ListView list = (ListView) rootView.findViewById(R.id.gym_list);
         list.setAdapter(mGymAdapter);
 
+
+        //Move to Gym resister activity when it clicked
+        mGymResister = (Button) rootView.findViewById(R.id.resister_gym_button);
+        mGymResister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent problemIntent = new Intent(getActivity(), GymResister.class);
+                startActivity(problemIntent);
+            }
+        });
 
         return rootView;
     }
