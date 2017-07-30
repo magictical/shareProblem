@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.climbtogether.R;
+import com.example.android.climbtogether.fragment.GymDetailFragment;
 import com.example.android.climbtogether.fragment.GymFragment;
 import com.example.android.climbtogether.fragment.HomeFragment;
 import com.example.android.climbtogether.fragment.ProblemFragment;
@@ -262,6 +263,11 @@ public class MainActivity extends AppCompatActivity {
                 //open ProblemFragment
                 ProblemFragment problemFragment = new ProblemFragment();
                 return problemFragment;
+
+            case 3:
+                //open GymDetailActivity
+                GymDetailFragment gymDetailFragment = new GymDetailFragment();
+                return gymDetailFragment;
             default:
                 return new HomeFragment();
         }
@@ -325,6 +331,11 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this, OtherActivity.class));
                         mDrawer.closeDrawers();
                         return true;*/
+
+                    case R.id.nav_notifications:
+                        navItemIndex = 3;
+                        CURRENT_TAG = TAG_NOTIFICATIONS;
+                        break;
                     default:
                         navItemIndex = 0;
                 }
