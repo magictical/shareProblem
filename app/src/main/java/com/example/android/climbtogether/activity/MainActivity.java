@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.climbtogether.R;
-import com.example.android.climbtogether.fragment.GymDetailFragment;
 import com.example.android.climbtogether.fragment.GymFragment;
 import com.example.android.climbtogether.fragment.HomeFragment;
 import com.example.android.climbtogether.fragment.ProblemFragment;
@@ -264,10 +263,10 @@ public class MainActivity extends AppCompatActivity {
                 ProblemFragment problemFragment = new ProblemFragment();
                 return problemFragment;
 
-            case 3:
-                //open GymDetailActivity
+            /*case 3:
+                //open GymDetailFragment
                 GymDetailFragment gymDetailFragment = new GymDetailFragment();
-                return gymDetailFragment;
+                return gymDetailFragment;*/
             default:
                 return new HomeFragment();
         }

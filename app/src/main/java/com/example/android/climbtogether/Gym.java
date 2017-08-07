@@ -5,11 +5,11 @@ package com.example.android.climbtogether;
  */
 //Gym 클래스 이름/연락처/위치/사진정보/ [Problem의 슈퍼클래스?]
 public class Gym {
-    private String gymName;
-    private String gymLocation;
-    private String gymContact;
-    private int gymPrice;
-    private String gymPhotoUri;
+    public String gymName;
+    public String gymLocation;
+    public String gymContact;
+    public int gymPrice;
+    public String gymPhotoUri;
 
 
     //요건다시보기

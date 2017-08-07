@@ -42,10 +42,12 @@
         <activity
             android:name=".activity.GymResister"
             android:label="Resister Your Gym"/>
-        <activity
+
+        <fragment
             android:name=".fragment.ProblemFragment"
             android:label="Check the Problems In the Gym">
-        </activity>
+        </fragment>
+
         <activity
             android:name=".activity.ProblemResister"
             android:label="Add your Problems">
