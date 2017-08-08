@@ -3,11 +3,16 @@ package com.example.android.climbtogether.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.android.climbtogether.Gym;
 import com.example.android.climbtogether.R;
 import com.google.firebase.database.DataSnapshot;
@@ -62,6 +67,9 @@ public class GymDetailActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        //Add progress bar in the gym ImageView
+        final ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.gym_image_progressbar);
+
         //Addd value event listener to the Gym
         // [START post_value_event_listener
         ValueEventListener gymListener = new ValueEventListener() {
@@ -70,6 +78,20 @@ public class GymDetailActivity extends AppCompatActivity {
                 Gym gym = dataSnapshot.getValue(Gym.class);
                 Glide.with(mDetailGymImage.getContext())
                         .load(gym.getGymPhotoUri())
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                mProgressBar.setVisibility(View.GONE);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                mProgressBar.setVisibility(View.GONE);
+                                return false;
+                            }
+                        })
+                        .override(1920, 1080)
                         .into(mDetailGymImage);
                 mDetailGymName.setText(gym.getGymName());
                 mDetailContactNumb.setText(gym.getGymContact());
