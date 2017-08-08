@@ -39,7 +39,7 @@ public class GymFragment extends Fragment {
     //Add Problem button
     Button mProblemResister;
 
-    //var Recycler
+    //RecyclerView
     RecyclerView mRecyclerView;
 
     //add FireBaseDatabase
@@ -121,9 +121,7 @@ public class GymFragment extends Fragment {
                         startActivity(intent);
                     }
                 });
-
                 viewHolder.bindToGym(model);
-
             }
         };
         mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
@@ -137,7 +135,7 @@ public class GymFragment extends Fragment {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     Gym gym = dataSnapshot.getValue(Gym.class);
-                    /*mFirebaseRecyclerAdapter.add(gym);*/
+                    /*mFirebaseRecyclerAdapter.(gym);*/
                 }
 
                 @Override

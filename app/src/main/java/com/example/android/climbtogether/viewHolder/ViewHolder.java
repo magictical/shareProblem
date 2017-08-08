@@ -62,4 +62,6 @@ public class ViewHolder extends RecyclerView.ViewHolder {
                 mGymPrice.setText(Integer.toString(gym.getGymPrice()));
 
         }
+
+        public void bindToDetailGymData() {}
     }

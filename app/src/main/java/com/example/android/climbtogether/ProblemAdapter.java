@@ -51,7 +51,7 @@ public class ProblemAdapter extends ArrayAdapter<Problem> {
         TextView problemlevel = (TextView) listScraps.findViewById(R.id.text_problem_level);
         problemlevel.setText(currentProblem.getProblemLevel());
 
-        //set Problem creator
+        /*//set Problem creator
         TextView problemCreator = (TextView) listScraps.findViewById(R.id.text_problem_creator);
         problemCreator.setText(currentProblem.getProblemCreator());
 
@@ -65,7 +65,7 @@ public class ProblemAdapter extends ArrayAdapter<Problem> {
 
         //set Problem expireDay
         TextView problemExpireDay = (TextView) listScraps.findViewById(R.id.text_problem_expireday);
-        problemExpireDay.setText(currentProblem.getProblemExpireDay());
+        problemExpireDay.setText(currentProblem.getProblemExpireDay());*/
 
         return listScraps;
     }

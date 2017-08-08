@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +17,10 @@ import android.widget.ListView;
 import com.example.android.climbtogether.Problem;
 import com.example.android.climbtogether.ProblemAdapter;
 import com.example.android.climbtogether.R;
+import com.example.android.climbtogether.activity.ProblemDetailActivity;
 import com.example.android.climbtogether.activity.ProblemResister;
+import com.example.android.climbtogether.viewHolder.ProblemViewHolder;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +49,20 @@ public class ProblemFragment extends Fragment {
     //child DB listener
     ChildEventListener mChildEventListener;
 
+    //change array Adapter to FirebaseRecyclerAdapter by using RecyclerView
+
+    //Add RecyclerView
+    RecyclerView mRecyclerView;
+
+    private FirebaseRecyclerAdapter<Problem, ProblemViewHolder> mFirebaseRecyclerAdapter;
+
+    private LinearLayoutManager mLinearLayoutManager;
+
+
+
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -52,11 +71,6 @@ public class ProblemFragment extends Fragment {
         //add Access point of FirebaseDatabase
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data");
-
-        //add Access point of FirebaseStorage
-        mFirebaseStorage = FirebaseStorage.getInstance();
-        mProblemStorageReference = mFirebaseStorage.getReference().child("problem_photos");
-
 
         mAddProblem = (Button) rootView.findViewById(R.id.resister_problem_button);
         mAddProblem.setOnClickListener(new View.OnClickListener() {
@@ -67,22 +81,18 @@ public class ProblemFragment extends Fragment {
             }
         });
 
-        ArrayList<Problem> problems = new ArrayList<Problem>();
+        /*ArrayList<Problem> problems = new ArrayList<Problem>();
         mProblemAdapter = new ProblemAdapter(getActivity(), problems);
         ListView listview = (ListView) rootView.findViewById(R.id.problem_list);
-        listview.setAdapter(mProblemAdapter);
+        listview.setAdapter(mProblemAdapter);*/
+
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.problem_list);
+        mRecyclerView.setHasFixedSize(true);
 
         return rootView;
 
 
     }
-
-//    public void passAuth(String sendMsg, FirebaseAuth auth, FirebaseAuth.AuthStateListener listener) {
-//        check = sendMsg;
-//        mFirebaseAuth = auth;
-//        mAuthStateListener = listener;
-//    }
-
 
     private void attachDatabaseListener() {
         if(mChildEventListener == null) {
@@ -90,7 +100,9 @@ public class ProblemFragment extends Fragment {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     Problem problem = dataSnapshot.getValue(Problem.class);
+                    /*
                     mProblemAdapter.add(problem);
+                    */
                 }
 
                 @Override
@@ -122,6 +134,42 @@ public class ProblemFragment extends Fragment {
             mProblemDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mLinearLayoutManager.setReverseLayout(true);
+        mLinearLayoutManager.setStackFromEnd(true);
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Problem, ProblemViewHolder>(
+                Problem.class,
+                R.layout.listitem_problem,
+                ProblemViewHolder.class,
+                mProblemDatabaseReference
+        ) {
+            @Override
+            protected void populateViewHolder(ProblemViewHolder viewHolder, Problem model, int position) {
+                final DatabaseReference problemRef = getRef(position);
+                //Set Click listener for the Problem detail view
+                final String problemDetailKey = problemRef.getKey();
+
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //launch problem DetailView
+                        Intent intent = new Intent(getActivity(), ProblemDetailActivity.class);
+                        intent.putExtra(ProblemDetailActivity.EXTRA_PROBLEM_DETAIL_KEY, problemDetailKey);
+                        startActivity(intent);
+                    }
+                });
+                viewHolder.bindToProblem(model);
+            }
+        };
+        mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
     }
 
     @Override

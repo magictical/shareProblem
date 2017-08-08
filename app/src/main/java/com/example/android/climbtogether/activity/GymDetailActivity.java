@@ -70,7 +70,7 @@ public class GymDetailActivity extends AppCompatActivity {
         //Add progress bar in the gym ImageView
         final ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.gym_image_progressbar);
 
-        //Addd value event listener to the Gym
+        //Add value event listener to the Gym
         // [START post_value_event_listener
         ValueEventListener gymListener = new ValueEventListener() {
             @Override
