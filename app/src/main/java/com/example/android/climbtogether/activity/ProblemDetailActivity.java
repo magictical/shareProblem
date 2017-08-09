@@ -1,7 +1,6 @@
 package com.example.android.climbtogether.activity;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,7 +13,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.example.android.climbtogether.Problem;
+import com.example.android.climbtogether.Model.Problem;
 import com.example.android.climbtogether.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -93,6 +92,11 @@ public class ProblemDetailActivity extends AppCompatActivity {
                             }
                         })
                         .into(mDetailProblemImage);
+
+                mDetailProblemName.setText(problem.getProblemName());
+                mDetailProblemLevel.setText(problem.getProblemLevel());
+                mDetailProblemDate.setText(problem.getProblemExpireDay());
+                mDetailProblemSubscribers.setText(problem.getProblemFinisher());
             }
 
             @Override

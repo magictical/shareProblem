@@ -65,7 +65,6 @@
         android:layout_width="0dp"
         android:layout_height="150dp"
         android:scaleType="centerCrop"
-        app:srcCompat="@drawable/alberto_4510"
         tools:layout_editor_absoluteY="105dp"
         tools:layout_editor_absoluteX="0dp"/>
 
