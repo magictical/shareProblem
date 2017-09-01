@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.android.climbtogether.Model.Gym;
-import com.example.android.climbtogether.GymAdapter;
 import com.example.android.climbtogether.R;
 import com.example.android.climbtogether.activity.GymDetailActivity;
 import com.example.android.climbtogether.activity.GymResister;
@@ -32,7 +31,7 @@ import com.google.firebase.storage.StorageReference;
 public class GymFragment extends Fragment {
     public static final String TAG = GymFragment.class.getName();
 
-    GymAdapter mGymAdapter;
+//    GymAdapter mGymAdapter;
 
     //Add Gym button
     Button mGymResister;

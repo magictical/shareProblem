@@ -9,10 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.android.climbtogether.Model.Problem;
 
 import java.util.ArrayList;
-
-import static android.R.id.list;
 
 /**
  * Created by MD on 2017-03-01.

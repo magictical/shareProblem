@@ -1,7 +1,11 @@
 package com.example.android.climbtogether.fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.android.climbtogether.Manifest;
 import com.example.android.climbtogether.PermissionUtils;
 import com.example.android.climbtogether.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,6 +26,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,6 +51,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     //use google maps
     private GoogleMap gMap;
+
+    //get the current location
+    private Location mCurrentLocation;
+
+    private GoogleMap.OnMyLocationButtonClickListener mOnMyLocationButtonClickListener;
+
+
+    private LocationManager mLocationManager;
+    private LocationListener mLocationListener;
+
 
     /**
      * Request code for location permission request.
@@ -97,6 +112,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.home_map);
         mapFragment.getMapAsync(this);
+
+
+
+
         return rootView;
     }
 
@@ -131,9 +150,35 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         CameraPosition position = CameraPosition.builder().target(home).zoom(12).build();
         gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
 
-        gMap.setOnMyLocationButtonClickListener(this);
+        gMap.setOnMyLocationButtonClickListener(mOnMyLocationButtonClickListener);
+
+        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        mLocationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.i("Location : ", location.toString());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
         enableMyLocation();
     }
+
+
 
     /**
      * Enable the My Location layer if the fine location permission has been granted
@@ -141,9 +186,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private void enableMyLocation() {
         if(ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
+            ActivityCompat.requestPermissions   (getActivity(), new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
-        } else if (gMap != null){
+
+        } else if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+        }
+        if (gMap != null){
             //Access to the location has been granted to the app
             gMap.setMyLocationEnabled(true);
         }
@@ -152,7 +201,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public boolean onMyLocationButtonClick() {
         Toast.makeText(getContext(), "MyLocation button click", Toast.LENGTH_SHORT).show();
-        return false;
+
+        return true;
     }
 
     @Override
@@ -166,13 +216,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 android.Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Enable the my location layer if the permission has been granted.
             enableMyLocation();
+            if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+            }
         } else {
             // Display the missing permission error dialog when the fragments resume.
             mPermissionDenied = true;
         }
     }
-
-
 
     /**
      * This interface must be implemented by activities that contain this
