@@ -27,8 +27,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -38,6 +36,14 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+
+    //Interface for passing Geo Data to Activity
+    public interface UserLocationListener {
+        void setUserLocation(Location userLocation);
+    }
+
+    UserLocationListener mUserLocationListener;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -129,18 +135,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if(context instanceof UserLocationListener) {
+            mUserLocationListener = (UserLocationListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
+                    + "must implement GeoDataListener");
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        //Detach Listeners
         mListener = null;
+        mUserLocationListener = null;
     }
 
     @Override
@@ -157,6 +165,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                mUserLocationListener.setUserLocation(location);
                 Log.i("Location : ", location.toString());
             }
 
@@ -177,9 +186,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         };
         enableMyLocation();
     }
-
-
-
     /**
      * Enable the My Location layer if the fine location permission has been granted
      */

@@ -10,14 +10,11 @@
 
         <ImageView
             android:id="@+id/resister_gym_photo_image_view"
-            android:layout_width="200dp"
-            android:layout_height="100dp"/>
-
-        <Button
-            android:id="@+id/resister_gym_load_image_button"
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Load Image"/>
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/add_btn"/>
 
 
         <TextView
