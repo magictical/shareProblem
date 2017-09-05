@@ -33,8 +33,11 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.twitter.sdk.android.core.services.params.Geocode;
 
 import java.util.Arrays;
+
+import static android.R.attr.data;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.UserLocationListener{
     ////////////////
@@ -78,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
     //add Firebase Auth Listener
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
+    //Current UserLocation data
+    private Location mUserLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,14 +114,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
         //load toolbar titles from string resources
         activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentResisterGym = new Intent(MainActivity.this, GymResister.class);
-                startActivity(intentResisterGym);
-                /*Snackbar.make(v, "replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();*/
-            }
-        });
+
 
         //load nav menu header data
         loadNavHeader();
@@ -151,11 +150,35 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
                 }
             }
         };
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Use parcelable
+                Intent intentResisterGym = new Intent(MainActivity.this, GymResister.class);
+                intentResisterGym.putExtra(GymResister.USER_LOCATION_KEY, mUserLocation);
+                startActivity(intentResisterGym);
+
+
+
+
+                /*double lat =  mUserLocation.getLatitude();
+                double lng =  mUserLocation.getLongitude();
+
+                Intent intentResisterGym = new Intent(MainActivity.this, GymResister.class);
+                intentResisterGym.putExtra(GymResister.EXTRA_USER_LOCATION_KEY_LAT, lat );
+                intentResisterGym.putExtra(GymResister.EXTRA_USER_LOCATION_KEY_LNG, lng);
+                startActivity(intentResisterGym);*/
+
+                /*Snackbar.make(v, "replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();*/
+            }
+        });
     }
 
     @Override
     public void setUserLocation(Location userLocation) {
-        Log.d(LOG_TAG, "Geo data from fragment is: sets to : " + userLocation);
+
+            mUserLocation = userLocation;
+            Log.d(LOG_TAG, "Geo data from fragment is: sets to : " + userLocation);
     }
 
     @Override
