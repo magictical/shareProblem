@@ -7,11 +7,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import static android.content.Context.LOCATION_SERVICE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +43,7 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
+    public static final String LOG_TAG = HomeFragment.class.getName();
     //Interface for passing Geo Data to Activity
     public interface UserLocationListener {
         void setUserLocation(Location userLocation);
@@ -58,9 +65,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     //use google maps
     private GoogleMap gMap;
 
-    //get the current location
-    private Location mCurrentLocation;
-
     private GoogleMap.OnMyLocationButtonClickListener mOnMyLocationButtonClickListener;
 
 
@@ -68,6 +72,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private LocationListener mLocationListener;
 
 
+    private static Location mCurrentUserLocation;
+    private LatLng mCurrentUserLatLng;
     /**
      * Request code for location permission request.
      *
@@ -119,9 +125,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 .findFragmentById(R.id.home_map);
         mapFragment.getMapAsync(this);
 
-
-
-
         return rootView;
     }
 
@@ -154,18 +157,22 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
-        LatLng home = new LatLng(-33.852, 151.211);
-        CameraPosition position = CameraPosition.builder().target(home).zoom(12).build();
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
 
-        gMap.setOnMyLocationButtonClickListener(mOnMyLocationButtonClickListener);
+        gMap.setOnMyLocationButtonClickListener(this);
 
-        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
 
         mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+
+                /*mCurrentUserLocation = location;*/
                 mUserLocationListener.setUserLocation(location);
+                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                gMap.clear();
+                gMap.addMarker(new MarkerOptions().position(userLocation).title("I'm here(new Position"));
+                gMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+
                 Log.i("Location : ", location.toString());
             }
 
@@ -184,52 +191,215 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
             }
         };
-        enableMyLocation();
+        if (Build.VERSION.SDK_INT < 23) {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+            Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            /*if(lastKnownLocation == null) {
+                lastKnownLocation = new Location(LocationManager.GPS_PROVIDER);
+
+                lastKnownLocation.setLatitude(36);
+                lastKnownLocation.setLongitude(128);
+            }*/
+            Log.v(LOG_TAG, lastKnownLocation.toString());
+            mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+
+            //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
+            mUserLocationListener.setUserLocation(lastKnownLocation);
+
+
+            gMap.clear();
+
+            gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));
+            CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
+            gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+
+
+        } else {
+
+            if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_PERMISSION_REQUEST_CODE);
+
+            } else {
+
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
+
+                Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
+                mUserLocationListener.setUserLocation(lastKnownLocation);
+
+                mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                gMap.clear();
+
+                gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));
+                CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
+                gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+
+            }
+        }
+        /*if(mCurrentUserLocation == null) {
+            if (Build.VERSION.SDK_INT < 23) {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
+                mCurrentUserLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                *//*mUserLocationListener.setUserLocation(mCurrentUserLocation);*//*
+            }else {
+                if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+                }else {
+                    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
+                    Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    mUserLocationListener.setUserLocation(location);
+                }
+            }
+        }*//* else {
+            mUserLocationListener.setUserLocation(mCurrentUserLocation);
+        }*/
     }
     /**
      * Enable the My Location layer if the fine location permission has been granted
      */
     private void enableMyLocation() {
-        if(ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions   (getActivity(), new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
-
-        } else if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT < 23) {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+                Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                Log.v(LOG_TAG, lastKnownLocation.toString());
+                mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+
+                gMap.clear();
+
+                gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));
+                CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
+                gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+
+
+            //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
+            /*mUserLocationListener.setUserLocation(lastKnownLocation);*/
+        } else {
+
+            if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_PERMISSION_REQUEST_CODE);
+
+            } else {
+
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
+
+                Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
+                mUserLocationListener.setUserLocation(lastKnownLocation);
+
+                mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                gMap.clear();
+
+                gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));
+                CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
+                gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+
+            }
         }
-        if (gMap != null){
+        /*if (gMap != null){
             //Access to the location has been granted to the app
             gMap.setMyLocationEnabled(true);
-        }
-    }
+        }*/
 
+    }
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(getContext(), "MyLocation button click", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "MyLocation button click", Toast.LENGTH_LONG).show();
+       /* CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));*/
 
-        return true;
+
+        return false;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-            //return이 실행되면 현재메소드 onRequestPermissionResult 가 종료되고 나머지 line 은
-            // 실행되지 않는다
-            return;
-        }
-        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Enable the my location layer if the permission has been granted.
-            enableMyLocation();
-            if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
+                }
+
             }
-        } else {
-            // Display the missing permission error dialog when the fragments resume.
-            mPermissionDenied = true;
+            if (gMap != null) {
+                gMap.setMyLocationEnabled(true);
+            }
         }
     }
+   /* public Location getLocation() {
+        int MIN_TIME_BW_UPDATES = 10000;
+        int MIN_DISTANCE_CHANGE_FOR_UPDATES = 10000;
+        try {
+            LocationManager locationManager = (LocationManager) getApplicationContext()
+                    .getSystemService(LOCATION_SERVICE);
+
+            boolean isGPSEnabled = locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            boolean isPassiveEnabled = locationManager
+                    .isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
+
+            boolean isNetworkEnabled = locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (isGPSEnabled || isNetworkEnabled || isPassiveEnabled) {
+
+                this.canGetLocation = true;
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled && location == null) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    Log.d("GPS", "GPS Enabled");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    }
+                }
+                if (isPassiveEnabled && location == null) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.PASSIVE_PROVIDER,
+                            MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    Log.d("Network", "Network Enabled");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                    }
+                }
+
+                if (isNetworkEnabled && location == null) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER,
+                            MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    Log.d("Network", "Network Enabled");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    }
+                }
+
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return location;
+    }*/
+
+
 
     /**
      * This interface must be implemented by activities that contain this
