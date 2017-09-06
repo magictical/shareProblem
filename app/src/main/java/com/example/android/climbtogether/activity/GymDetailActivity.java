@@ -26,12 +26,11 @@ public class GymDetailActivity extends AppCompatActivity {
     public static final String TAG = GymDetailActivity.class.getName();
 
     public static final String EXTRA_GYM_DETAIL_KEY = "gym_detail_key";
+    private String mGymDetailKey;
 
     private DatabaseReference mGymReference;
 
     private ValueEventListener mGymListener;
-
-    private String mGymDetailKey;
 
     //instances in the detailView
     private ImageView mDetailGymImage;
@@ -45,6 +44,7 @@ public class GymDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gym_detail_view);
 
+        //get PutExtra data from Intent(came from GymFragment)
         mGymDetailKey = getIntent().getStringExtra(EXTRA_GYM_DETAIL_KEY);
         if(mGymDetailKey == null) {
             throw new IllegalArgumentException("Must pass EXTRA_GYM_DETAIL_KEY");

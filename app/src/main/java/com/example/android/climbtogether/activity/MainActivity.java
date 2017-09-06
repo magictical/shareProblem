@@ -30,14 +30,10 @@ import com.example.android.climbtogether.fragment.HomeFragment;
 import com.example.android.climbtogether.fragment.ProblemFragment;
 import com.example.android.climbtogether.other.CircleTransform;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.twitter.sdk.android.core.services.params.Geocode;
 
 import java.util.Arrays;
-
-import static android.R.attr.data;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.UserLocationListener{
     ////////////////
