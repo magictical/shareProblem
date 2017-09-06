@@ -7,20 +7,17 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.android.climbtogether.PermissionUtils;
 import com.example.android.climbtogether.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,10 +25,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import static android.content.Context.LOCATION_SERVICE;
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,6 +39,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     public static final String LOG_TAG = HomeFragment.class.getName();
+
     //Interface for passing Geo Data to Activity
     public interface UserLocationListener {
         void setUserLocation(Location userLocation);
@@ -65,15 +61,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     //use google maps
     private GoogleMap gMap;
 
-    private GoogleMap.OnMyLocationButtonClickListener mOnMyLocationButtonClickListener;
-
-
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
 
 
     private static Location mCurrentUserLocation;
     private LatLng mCurrentUserLatLng;
+
     /**
      * Request code for location permission request.
      *
@@ -156,6 +150,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         gMap = googleMap;
 
         gMap.setOnMyLocationButtonClickListener(this);
@@ -166,19 +161,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             @Override
             public void onLocationChanged(Location location) {
 
-                /*mCurrentUserLocation = location;*/
-                mUserLocationListener.setUserLocation(location);
-                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                gMap.clear();
-                gMap.addMarker(new MarkerOptions().position(userLocation).title("I'm here(new Position"));
-                gMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+                try {
+                    if(location == null) {
+                        Location tempLocation = new Location("");
+                        tempLocation.setLatitude(0);
+                        tempLocation.setLongitude(0);
+                        Log.d(LOG_TAG, "Error with onLocationChanged");
+                        Toast.makeText(getContext(), "onLocationChanged is error", Toast.LENGTH_LONG);
+                    }
+                    mUserLocationListener.setUserLocation(location);
+                    LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    gMap.clear();
+                    /*gMap.addMarker(new MarkerOptions().position(userLocation).title("I'm here(new Position"));*/
+                    gMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
 
-                Log.i("Location : ", location.toString());
+                    Log.i(LOG_TAG, "location Listener : Location Changed" + location.toString());
+                } catch (Exception e) {
+                    //이메세지가 나올경우 현재위치가 정확하지 않을 수 있으므로 해당 내용을 알려주는게 좋을것 같다.
+                    Log.e(LOG_TAG, "location error " + e.toString());
+                    e.printStackTrace();
+                }
+
             }
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
+            //Provider의 상태에 따라서 사용할 프로바이더와 에러메세지 출력
             }
 
             @Override
@@ -191,213 +199,128 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
             }
         };
-        if (Build.VERSION.SDK_INT < 23) {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-            Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-            /*if(lastKnownLocation == null) {
-                lastKnownLocation = new Location(LocationManager.GPS_PROVIDER);
+        Location lastKnownLocation = initLocationProvider();
+        mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
-                lastKnownLocation.setLatitude(36);
-                lastKnownLocation.setLongitude(128);
-            }*/
-            Log.v(LOG_TAG, lastKnownLocation.toString());
-            mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
+        mUserLocationListener.setUserLocation(lastKnownLocation);
 
-            //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
-            mUserLocationListener.setUserLocation(lastKnownLocation);
-
-
-            gMap.clear();
-
-            gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));
-            CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
-            gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
-
-
-        } else {
-
-            if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        LOCATION_PERMISSION_REQUEST_CODE);
-
-            } else {
-
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
-
-                Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
-                mUserLocationListener.setUserLocation(lastKnownLocation);
-
-                mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                gMap.clear();
-
-                gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));
-                CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
-                gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
-
-            }
-        }
-        /*if(mCurrentUserLocation == null) {
-            if (Build.VERSION.SDK_INT < 23) {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
-                mCurrentUserLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                *//*mUserLocationListener.setUserLocation(mCurrentUserLocation);*//*
-            }else {
-                if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-                }else {
-                    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
-                    Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    mUserLocationListener.setUserLocation(location);
-                }
-            }
-        }*//* else {
-            mUserLocationListener.setUserLocation(mCurrentUserLocation);
-        }*/
-    }
-    /**
-     * Enable the My Location layer if the fine location permission has been granted
-     */
-    private void enableMyLocation() {
-        if (Build.VERSION.SDK_INT < 23) {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-                Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                Log.v(LOG_TAG, lastKnownLocation.toString());
-                mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-                gMap.clear();
-
-                gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));
-                CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
-                gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
-
-
-            //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
-            /*mUserLocationListener.setUserLocation(lastKnownLocation);*/
-        } else {
-
-            if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        LOCATION_PERMISSION_REQUEST_CODE);
-
-            } else {
-
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
-
-                Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
-                mUserLocationListener.setUserLocation(lastKnownLocation);
-
-                mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                gMap.clear();
-
-                gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));
-                CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
-                gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
-
-            }
-        }
-        /*if (gMap != null){
-            //Access to the location has been granted to the app
+        if(gMap != null) {
+            checkLocationPermission();
             gMap.setMyLocationEnabled(true);
-        }*/
+        }
+        gMap.clear();
 
+        /*gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));*/
+        CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
     }
+
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(getContext(), "MyLocation button click", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Move to My Location", Toast.LENGTH_LONG).show();
        /* CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
         gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));*/
-
-
         return false;
     }
 
+    //when request permission is triggered then check the permission and
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
                 }
-
             }
-            if (gMap != null) {
-                gMap.setMyLocationEnabled(true);
-            }
-        }
     }
-   /* public Location getLocation() {
+    //
+    public Location initLocationProvider() {
         int MIN_TIME_BW_UPDATES = 10000;
-        int MIN_DISTANCE_CHANGE_FOR_UPDATES = 10000;
-        try {
-            LocationManager locationManager = (LocationManager) getApplicationContext()
-                    .getSystemService(LOCATION_SERVICE);
+        int MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
+        Location initLocation = null;
+        if(checkLocationPermission()) {
+            try {
+                boolean isGPSEnabled = mLocationManager
+                        .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            boolean isGPSEnabled = locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+                boolean isNetworkEnabled = mLocationManager
+                        .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            boolean isPassiveEnabled = locationManager
-                    .isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
+                if (isGPSEnabled || isNetworkEnabled) {
 
-            boolean isNetworkEnabled = locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (isGPSEnabled || isNetworkEnabled || isPassiveEnabled) {
-
-                this.canGetLocation = true;
-                // if GPS Enabled get lat/long using GPS Services
-                if (isGPSEnabled && location == null) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d("GPS", "GPS Enabled");
-                    if (locationManager != null) {
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    // if all providers are enable then use GPS
+                    if (isGPSEnabled) {
+                        mLocationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, mLocationListener);
+                        Log.d("All Provider", "Use best provider : GPS");
+                        if (mLocationManager != null) {
+                            initLocation = mLocationManager
+                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        }
+                    }else {
+                            mLocationManager.requestLocationUpdates(
+                                    LocationManager.NETWORK_PROVIDER,
+                                    MIN_TIME_BW_UPDATES,
+                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, mLocationListener);
+                            Log.d("Network", "Network Enabled");
+                            if (mLocationManager != null) {
+                                initLocation = mLocationManager
+                                        .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            }
+                        }
+                } else {
+                    //if all providers are unable, then initLocation equals to null
+                    // in this case, use PassiveProvider(not accurate)
+                    // and notifying user It's not accurate.
+                    if(initLocation == null) {
+                        if (mLocationManager
+                                .isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+                            mLocationManager.requestLocationUpdates(
+                                    LocationManager.PASSIVE_PROVIDER,
+                                    MIN_TIME_BW_UPDATES,
+                                    MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                                    mLocationListener);
+                            Log.d("Passive", "Passive is Enabled");
+                            if (mLocationManager != null) {
+                                initLocation = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                                Toast.makeText(getContext(), "Can't find location this might be inaccurate Please turn on GPS, Network", Toast.LENGTH_SHORT);
+                                Log.d(LOG_TAG, "use passive provider");
+                            }
+                            //if all providers are unable, then set default location and notifying it.
+                        }
                     }
                 }
-                if (isPassiveEnabled && location == null) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.PASSIVE_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d("Network", "Network Enabled");
-                    if (locationManager != null) {
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-                    }
-                }
-
-                if (isNetworkEnabled && location == null) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d("Network", "Network Enabled");
-                    if (locationManager != null) {
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    }
-                }
-
-            } else {
-                return null;
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(LOG_TAG, e.toString());
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (initLocation == null) {
+                initLocation = new Location("");
+                initLocation.setLatitude(0);
+                initLocation.setLatitude(0);
+                Toast.makeText(getContext(), "can't find user location, Please check GPS, Network", Toast.LENGTH_SHORT).show();
+                Log.d(LOG_TAG, "can't use Any Provider");
+            }
         }
-        return location;
-    }*/
+        return initLocation;
+    }
+
+    public boolean checkLocationPermission() {
+        boolean isPermissionGranted = false;
+        if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+            isPermissionGranted = true;
+        } else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            isPermissionGranted = true;
+        }
+        return isPermissionGranted;
+    }
+
 
 
 
