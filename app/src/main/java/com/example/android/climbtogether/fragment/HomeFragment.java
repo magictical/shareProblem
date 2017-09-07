@@ -206,22 +206,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
         mUserLocationListener.setUserLocation(lastKnownLocation);
 
-        if(gMap != null) {
-            checkLocationPermission();
-            gMap.setMyLocationEnabled(true);
-        }
-        gMap.clear();
+
+
+
 
         /*gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));*/
         CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
         gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
     }
 
+    //if return = false => Default behavior : move to User's current location
     @Override
     public boolean onMyLocationButtonClick() {
         Toast.makeText(getContext(), "Move to My Location", Toast.LENGTH_LONG).show();
-       /* CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));*/
         return false;
     }
 
@@ -231,8 +228,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                }
             }
+        }
     }
     //
     public Location initLocationProvider() {
@@ -305,6 +302,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 Log.d(LOG_TAG, "can't use Any Provider");
             }
         }
+        if(gMap != null) {
+            gMap.setMyLocationEnabled(true);
+        }
         return initLocation;
     }
 
@@ -315,7 +315,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
             isPermissionGranted = true;
-        } else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        }else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             isPermissionGranted = true;
         }
         return isPermissionGranted;
