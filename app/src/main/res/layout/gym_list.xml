@@ -24,16 +24,4 @@
         android:textSize="16dp"
         tool:text="button"/>
 
-    <Button
-        android:id="@+id/move_to_problem_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/resister_gym_button"
-        android:layout_alignRight="@+id/gym_list"
-        android:text="see Problems"
-        android:textSize="16dp"
-        tool:text="button2"/>
-
-
-
 </RelativeLayout>

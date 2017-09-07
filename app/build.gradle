@@ -35,22 +35,27 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    testCompile 'junit:junit:4.12'
+    //중요 Firebase-ui는 반드시 같은 버전의 (firebase-xx: 같은버전') Firebase와 사용해야함!
+
+
+
+    compile 'com.android.support:appcompat-v7:25.2.0'
 
     compile 'com.github.bumptech.glide:glide:3.6.1'
-    //중요 Firebase-ui는 반드시 같은 버전의 (firebase-xx: 같은버전') Firebase와 사용해야함!
     //Firebase Auth
-    compile 'com.google.firebase:firebase-auth:10.0.1'
+    compile 'com.google.firebase:firebase-auth:10.2.0'
     //Firebase database
-    compile 'com.google.firebase:firebase-database:10.0.1'
+    compile 'com.google.firebase:firebase-database:10.2.0'
     //Firebase storage
-    compile 'com.google.firebase:firebase-storage:10.0.1'
+    compile 'com.google.firebase:firebase-storage:10.2.0'
+    //Firebase UI
+    compile 'com.firebaseui:firebase-ui-auth:1.2.0'
 
-    compile 'com.firebaseui:firebase-ui-auth:1.1.1'
+    //Google Map
+    compile 'com.google.android.gms:play-services-maps:10.2.0'
 
-
-
+    compile 'com.android.support:support-v4:25.2.0'
+    testCompile 'junit:junit:4.12'
 }
 
 apply plugin: 'com.google.gms.google-services'

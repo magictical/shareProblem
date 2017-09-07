@@ -6,7 +6,7 @@ package com.example.android.climbtogether;
 
 public class Problem /*extends Gym <=나중에 고려해보자*/ {
     private String problemName;
-    private int problemPhotoResourceId;
+    private String problemPhotoUri;
     private String problemLevel;
     private String problemCreator;
     private String problemFinisher;
@@ -16,10 +16,10 @@ public class Problem /*extends Gym <=나중에 고려해보자*/ {
     public Problem() {
     }
 
-    public Problem(String name, int problemPhoto, String level, String creator, String finisher,
+    public Problem(String name, String problemPhotoUri, String level, String creator, String finisher,
                    String challenger, String expireDay) {
         problemName = name;
-        problemPhotoResourceId = problemPhoto;
+        this.problemPhotoUri = problemPhotoUri;
         problemLevel = level;
         problemCreator = creator;
         problemFinisher = finisher;
@@ -36,12 +36,12 @@ public class Problem /*extends Gym <=나중에 고려해보자*/ {
         this.problemName = problemName;
     }
 
-    public int getProblemPhotoResourceId() {
-        return problemPhotoResourceId;
+    public String getProblemPhotoUri() {
+        return problemPhotoUri;
     }
 
-    public void setProblemPhotoResourceId(int problemPhotoResourceId) {
-        this.problemPhotoResourceId = problemPhotoResourceId;
+    public void setProblemPhotoUri(String problemPhotoUri) {
+        this.problemPhotoUri = problemPhotoUri;
     }
 
     public String getProblemLevel() {
