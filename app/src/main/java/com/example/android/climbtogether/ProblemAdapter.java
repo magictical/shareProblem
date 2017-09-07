@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.android.climbtogether.Model.Problem;
 
 import java.util.ArrayList;
 
@@ -45,7 +46,11 @@ public class ProblemAdapter extends ArrayAdapter<Problem> {
         TextView problemName = (TextView) listScraps.findViewById(R.id.text_problem_name);
         problemName.setText(currentProblem.getProblemName());
 
-        //set Problem creator
+        //set Problem Level
+        TextView problemlevel = (TextView) listScraps.findViewById(R.id.text_problem_level);
+        problemlevel.setText(currentProblem.getProblemLevel());
+
+        /*//set Problem creator
         TextView problemCreator = (TextView) listScraps.findViewById(R.id.text_problem_creator);
         problemCreator.setText(currentProblem.getProblemCreator());
 
@@ -59,7 +64,7 @@ public class ProblemAdapter extends ArrayAdapter<Problem> {
 
         //set Problem expireDay
         TextView problemExpireDay = (TextView) listScraps.findViewById(R.id.text_problem_expireday);
-        problemExpireDay.setText(currentProblem.getProblemExpireDay());
+        problemExpireDay.setText(currentProblem.getProblemExpireDay());*/
 
         return listScraps;
     }

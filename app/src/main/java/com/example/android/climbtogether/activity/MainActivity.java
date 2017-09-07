@@ -1,11 +1,11 @@
 package com.example.android.climbtogether.activity;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,8 +24,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.android.climbtogether.Gym;
-import com.example.android.climbtogether.GymAdapter;
 import com.example.android.climbtogether.R;
 import com.example.android.climbtogether.fragment.GymFragment;
 import com.example.android.climbtogether.fragment.HomeFragment;
@@ -33,17 +32,13 @@ import com.example.android.climbtogether.other.CircleTransform;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements HomeFragment.UserLocationListener{
     ////////////////
+
+    private final String LOG_TAG = MainActivity.class.getName();
     private NavigationView mNavigationView;
     private DrawerLayout mDrawer;
     private View navHeader;
@@ -55,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     // urls to load navigation header background image
     // and profile image
     private static final String urlNavHeaderBg = "http://api.androidhive.info/images/nav-menu-header-bg.jpg";
-    private static final String urlProfileImg = "https://lh3.googleusercontent.com/eCtE_G34M9ygdkmOpYvCag1vBARCmZwnVS6rS5t4JLzJ6QgQSBquM0nuTsCpLhYbKljoyS-txg";
+    private static final String urlProfileImg = "https://scontent-hkg3-2.xx.fbcdn.net/v/t1.0-9/163777_143173549071592_1853772_n.jpg?oh=32b527c605847e9037d2e5cdab9953a8&oe=59CA65FA";
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
@@ -75,23 +70,15 @@ public class MainActivity extends AppCompatActivity {
     private boolean shouldLoadHomeFragOnBackPress = true;
     private android.os.Handler mHandler;
 
-
-    ///////////
     private static final int RC_SIGN_IN = 1;
-
-    private GymAdapter mGymAdapter;
 
     //add Firebase Auth
     private FirebaseAuth mFirebaseAuth;
     //add Firebase Auth Listener
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-    protected FirebaseDatabase mFirebaseDatabase;
-    protected DatabaseReference mGymDatabaseReference;
-
-    //child Listener
-    /*protected ChildEventListener mChildEventListener;*/
-
+    //Current UserLocation data
+    private Location mUserLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,15 +110,7 @@ public class MainActivity extends AppCompatActivity {
         //load toolbar titles from string resources
         activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentResisterGym = new Intent(MainActivity.this, GymResister.class);
-                startActivity(intentResisterGym);
-                /*Snackbar.make(v, "replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();*/
 
-            }
-        });
 
         //load nav menu header data
         loadNavHeader();
@@ -145,20 +124,8 @@ public class MainActivity extends AppCompatActivity {
             loadHomeFragment();
         }
 
-
-
-
-
         //Firebase Auth instance
         mFirebaseAuth = FirebaseAuth.getInstance();
-
-        //Access point of DB
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        //reference of DB
-        mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
-
-        ArrayList<Gym> gym = new ArrayList<Gym>();
-        mGymAdapter = new GymAdapter(this, gym);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -179,6 +146,35 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Use parcelable
+                Intent intentResisterGym = new Intent(MainActivity.this, GymResister.class);
+                intentResisterGym.putExtra(GymResister.USER_LOCATION_KEY, mUserLocation);
+                startActivity(intentResisterGym);
+
+
+
+
+                /*double lat =  mUserLocation.getLatitude();
+                double lng =  mUserLocation.getLongitude();
+
+                Intent intentResisterGym = new Intent(MainActivity.this, GymResister.class);
+                intentResisterGym.putExtra(GymResister.EXTRA_USER_LOCATION_KEY_LAT, lat );
+                intentResisterGym.putExtra(GymResister.EXTRA_USER_LOCATION_KEY_LNG, lng);
+                startActivity(intentResisterGym);*/
+
+                /*Snackbar.make(v, "replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();*/
+            }
+        });
+    }
+
+    @Override
+    public void setUserLocation(Location userLocation) {
+
+            mUserLocation = userLocation;
+            Log.d(LOG_TAG, "Geo data from fragment is: sets to : " + userLocation);
     }
 
     @Override
@@ -204,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     private  void loadNavHeader() {
         //name, website
         txtName.setText("Ian Kim");
-        txtWebsite.setText("www.notyet.com");
+        txtWebsite.setText("www.ClimbTogether.com");
 
         //loading header background image
         Glide.with(this).load(urlNavHeaderBg)
@@ -254,6 +250,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Fragment fragment = getHomeFragment();
+                //플래그먼트로 데이터 보내보기 시험 - 가능함
+//                if(fragment instanceof ProblemFragment) {
+//                    ((ProblemFragment) fragment).passAuth("i sent", mFirebaseAuth, mAuthStateListener);
+//                }
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
                 fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
@@ -291,6 +291,11 @@ public class MainActivity extends AppCompatActivity {
                 //open ProblemFragment
                 ProblemFragment problemFragment = new ProblemFragment();
                 return problemFragment;
+
+            /*case 3:
+                //open GymDetailFragment
+                GymDetailFragment gymDetailFragment = new GymDetailFragment();
+                return gymDetailFragment;*/
             default:
                 return new HomeFragment();
         }
@@ -354,6 +359,11 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this, OtherActivity.class));
                         mDrawer.closeDrawers();
                         return true;*/
+
+                    case R.id.nav_notifications:
+                        navItemIndex = 3;
+                        CURRENT_TAG = TAG_NOTIFICATIONS;
+                        break;
                     default:
                         navItemIndex = 0;
                 }

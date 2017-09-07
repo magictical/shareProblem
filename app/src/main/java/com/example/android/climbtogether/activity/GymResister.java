@@ -2,7 +2,8 @@ package com.example.android.climbtogether.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,7 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.android.climbtogether.Gym;
+import com.example.android.climbtogether.Model.Gym;
 import com.example.android.climbtogether.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,8 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import java.io.InputStream;
 
 /**
  * Created by MD on 2017-02-16.
@@ -49,7 +48,7 @@ public class GymResister extends AppCompatActivity {
     private EditText mEditGymContact;
     private EditText mEditGymPrice;
 
-    private ImageView mPhotoResource;
+    private ImageView mSelectedImage;
 
 
     private Button mAddGymButton;
@@ -66,12 +65,42 @@ public class GymResister extends AppCompatActivity {
 
     private String gymPhotoUri;
 
-    private Uri selectedImgUri;
+    private Uri mImageUri;
+
+    private Bitmap resizedBit;
+
+    //String for getting putExtra data(User Location)
+    public  static final String EXTRA_USER_LOCATION_KEY_LAT = "user_location_key_lat";
+    public  static final String EXTRA_USER_LOCATION_KEY_LNG = "user_location_key_lng";
+
+    public static final String USER_LOCATION_KEY = "user_location_key";
+
+    private Location mUserLocation;
+
+    private double mUserLatKey;
+    private double mUserLngKey;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gym_resister);
+
+        mUserLocation = getIntent().getExtras().getParcelable(USER_LOCATION_KEY);
+        if(mUserLocation == null) {
+            throw new IllegalArgumentException("Must pass the USER_LOCATION_KEY");
+        }
+        Toast.makeText(this, "User Location isis :" + mUserLocation.toString(), Toast.LENGTH_LONG).show();
+
+
+
+        /*mUserLatKey = getIntent().getDoubleExtra(EXTRA_USER_LOCATION_KEY_LAT, 999);
+        mUserLngKey = getIntent().getDoubleExtra(EXTRA_USER_LOCATION_KEY_LNG, 999);
+        if(mUserLatKey  == 999 &&  mUserLngKey == 999) {
+            throw new IllegalArgumentException("Must pass the EXTRA_USER_LOCATION_KEY");
+        }*/
+        /*Toast.makeText(this, "User Location is : " + mUserLatKey + "  " + mUserLngKey, Toast.LENGTH_LONG).show();*/
+
 
         //Access point of database
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -104,14 +133,13 @@ public class GymResister extends AppCompatActivity {
         mEditGymPrice = (EditText) findViewById(R.id.resister_gym_price);
 
         //select img from sd card using by Intent and display img
-        mPhotoResource = (ImageView) findViewById(R.id.resister_gym_photo_image_view);
-        mSelectImageButton = (Button) findViewById(R.id.resister_gym_load_image_button);
+        mSelectedImage = (ImageView) findViewById(R.id.resister_gym_photo_image_view);
 
         //add listener to image button
-        mSelectImageButton.setOnClickListener(new View.OnClickListener() {
+        mSelectedImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent photoSelectorIntent = new Intent(Intent.ACTION_PICK);
+                Intent photoSelectorIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 photoSelectorIntent.setType("image/*");
                 startActivityForResult(photoSelectorIntent, RC_SELECT_PHOTO);
             }
@@ -136,17 +164,10 @@ public class GymResister extends AppCompatActivity {
         switch(requestCode) {
             case RC_SELECT_PHOTO:
                 if (resultCode == RESULT_OK) {
-
-                    selectedImgUri = returnIntentData.getData();
-                    InputStream imageStream = null;
-                    try {
-                        imageStream = getContentResolver().openInputStream(selectedImgUri);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Bitmap yourselectedImage = BitmapFactory.decodeStream(imageStream);
-                    //아마 사용되지 않을 라인일듯하다. 확인할것
-                    mPhotoResource.setImageURI(selectedImgUri);
+                    mImageUri = returnIntentData.getData();
+                    mSelectedImage.setImageURI(mImageUri);
+                    resizeImage(mSelectedImage);
+                    mSelectedImage.setImageBitmap(resizedBit);
                 }
         }
     }
@@ -168,9 +189,9 @@ public class GymResister extends AppCompatActivity {
     public void uploadPhotoToStorage() {
         //현재 선택한 photo의 ref
         StorageReference presentGymPhotoRef =
-                mGymStorageReferences.child(selectedImgUri.getLastPathSegment());
+                mGymStorageReferences.child(mImageUri.getLastPathSegment());
         //Upload file to Firebase Storage
-        presentGymPhotoRef.putFile(selectedImgUri)
+        presentGymPhotoRef.putFile(mImageUri)
                 .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -192,7 +213,7 @@ public class GymResister extends AppCompatActivity {
                             gymPrice = Integer.valueOf(mEditGymPrice.getText().toString());
 
                         } catch (Exception e) {
-                            if(mEditGymPrice.getText().toString().equals("") || mPhotoResource.equals("")) {
+                            if(mEditGymPrice.getText().toString().equals("") || mSelectedImage.equals("")) {
                                 Toast.makeText(GymResister.this, "가격을 입력해주세요(필수)",Toast.LENGTH_SHORT).show();
                             }
                             e.printStackTrace();
@@ -201,15 +222,46 @@ public class GymResister extends AppCompatActivity {
                         mGymDatabaseReference.push().setValue(gym);
 
                         Log.v(LOG_TAG, "gym name is " + gymName + "\n"
-                                + "gym Location is" + gymLocation + "\n"
-                                + "gym Contact is" + gymContact + "\n"
+                                + "gym Location is " + gymLocation + "\n"
+                                + "gym Contact is " + gymContact + "\n"
                                 + "gym Price is " + gymPrice + "\n"
-                                + "gym Photo is not ready" + gymPhotoUri);
+                                + "gym Photo is " + gymPhotoUri);
 
                         Toast.makeText(GymResister.this, gymName + " " + gymLocation+ " " + gymContact
                                 + gymPrice+ " "+ gymPhotoUri, Toast.LENGTH_SHORT).show();
                     }
                 });
 
+    }
+
+    public void resizeImage(ImageView view) {
+        //get a Image obj from ImageView
+
+        Bitmap bit = ((BitmapDrawable) view.getDrawable()).getBitmap();
+
+        int width = bit.getWidth();
+        int height = bit.getHeight();
+        float rate = 0.0f;
+
+        int maxResolution = 1920;
+
+        int newWidth = width;
+        int newHeight = height;
+
+        if(width > height) {
+            if(maxResolution < width) {
+                rate = maxResolution/ (float) width;
+                newHeight = (int) (height * rate);
+                newWidth = maxResolution;
+            }
+
+        } else {
+            if(maxResolution < height) {
+                rate = maxResolution/(float)height;
+                newWidth = (int) (width * rate);
+                newHeight = maxResolution;
+            }
+        }
+        resizedBit = Bitmap.createScaledBitmap(bit, newWidth, newHeight, true);
     }
 }

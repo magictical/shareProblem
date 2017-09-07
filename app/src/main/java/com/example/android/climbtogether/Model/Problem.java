@@ -1,4 +1,4 @@
-package com.example.android.climbtogether;
+package com.example.android.climbtogether.Model;
 
 /**
  * Created by MD on 2017-01-28.

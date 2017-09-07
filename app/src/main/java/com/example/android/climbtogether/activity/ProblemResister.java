@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.android.climbtogether.Problem;
+import com.example.android.climbtogether.Model.Problem;
 import com.example.android.climbtogether.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -24,8 +24,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.InputStream;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static com.example.android.climbtogether.activity.GymResister.LOG_TAG;
 import static com.example.android.climbtogether.activity.GymResister.RC_SELECT_PHOTO;
 
 public class ProblemResister extends AppCompatActivity {
