@@ -75,6 +75,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
      */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
+    private static final int LOCATION_ENABLE_MY_LOCATION_CLICK = 2;
+
     /**
      * Flag indicating whether a requested permission has been denied after returning in
      * {@link #onRequestPermissionsResult(int, String[], int[])}
@@ -152,8 +154,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(GoogleMap googleMap) {
 
         gMap = googleMap;
-
         gMap.setOnMyLocationButtonClickListener(this);
+
+
+        //퍼미션 로직중요!
+        //퍼미션 요청 -> onRequestPermissionResult 에서 처리 Fragment 인 경우 ActivityCompat.requestPermission 이 아닌
+        //requestPermission 을 사용하는것을 기억하자!!
+        //요청 구문뒤 else문은 이미 권한을 받은경우이므로 보통 onRequestPermission 내의 코드와 비슷한경우가 많을것같다.
+        //고민 해보면 중복제거할 수 있을것 같은데 일단 패스. 뇌 살살녹는다
+        if(ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]
+                    {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_ENABLE_MY_LOCATION_CLICK);
+        } else {
+            if(gMap != null) {
+                gMap.setMyLocationEnabled(true);
+            }
+        }
 
         mLocationManager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
 
@@ -206,10 +223,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
         mUserLocationListener.setUserLocation(lastKnownLocation);
 
-
-
-
-
         /*gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));*/
         CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
         gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
@@ -222,16 +235,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         return false;
     }
 
-    //when request permission is triggered then check the permission and
+    //when request permission is triggered then check the permission and init setMyLocationEnabled
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            }
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE :
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(ContextCompat.checkSelfPermission(getContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    }
+                }
+                break;
+            //최초 권한 받을때 MyLocation 버튼을 활성화
+            case LOCATION_ENABLE_MY_LOCATION_CLICK:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(getContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        if(gMap != null) {
+                            gMap.setMyLocationEnabled(true);
+                        }
+                    }
+                }
+                break;
         }
     }
-    //
+    //Init LocationProviders
     public Location initLocationProvider() {
         int MIN_TIME_BW_UPDATES = 10000;
         int MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
@@ -283,7 +312,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                             Log.d("Passive", "Passive is Enabled");
                             if (mLocationManager != null) {
                                 initLocation = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-                                Toast.makeText(getContext(), "Can't find location this might be inaccurate Please turn on GPS, Network", Toast.LENGTH_SHORT);
+                                Toast.makeText(getContext(), "Can't find location this might be inaccurate Please turn on GPS, Network", Toast.LENGTH_LONG);
                                 Log.d(LOG_TAG, "use passive provider");
                             }
                             //if all providers are unable, then set default location and notifying it.
@@ -294,16 +323,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 e.printStackTrace();
                 Log.e(LOG_TAG, e.toString());
             }
+            //PASSIVE도 Error인경우에서 initLocation인 null일때 nullPointException 방지 + 메세지
             if (initLocation == null) {
                 initLocation = new Location("");
                 initLocation.setLatitude(0);
                 initLocation.setLatitude(0);
-                Toast.makeText(getContext(), "can't find user location, Please check GPS, Network", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "can't find user location, Please check GPS, Network", Toast.LENGTH_LONG).show();
                 Log.d(LOG_TAG, "can't use Any Provider");
             }
-        }
-        if(gMap != null) {
-            gMap.setMyLocationEnabled(true);
         }
         return initLocation;
     }
@@ -312,7 +339,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         boolean isPermissionGranted = false;
         if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
             isPermissionGranted = true;
         }else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -320,9 +347,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         }
         return isPermissionGranted;
     }
-
-
-
 
     /**
      * This interface must be implemented by activities that contain this
