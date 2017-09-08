@@ -308,6 +308,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                             initLocation = mLocationManager
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         }
+                        //initLocation == null 일경우 GPS신호에 이상이 있음(안잡힐경우가 이런경우가 많음)
+                        //NetWork 사용
+                        if(initLocation == null) {
+
+                            mLocationManager.requestLocationUpdates(
+                                    LocationManager.NETWORK_PROVIDER,
+                                    MIN_TIME_BW_UPDATES,
+                                    MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                                    mLocationListener);
+                            Log.d(LOG_TAG, "GPS error, Use Network");
+
+                            initLocation = mLocationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
                     }else {
                         mLocationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
