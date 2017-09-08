@@ -3,6 +3,8 @@ package com.example.android.climbtogether.activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +26,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 /**
  * Created by MD on 2017-02-16.
@@ -81,6 +89,7 @@ public class GymResister extends AppCompatActivity {
     private double mUserLngKey;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +100,6 @@ public class GymResister extends AppCompatActivity {
             throw new IllegalArgumentException("Must pass the USER_LOCATION_KEY");
         }
         Toast.makeText(this, "User Location isis :" + mUserLocation.toString(), Toast.LENGTH_LONG).show();
-
 
 
         /*mUserLatKey = getIntent().getDoubleExtra(EXTRA_USER_LOCATION_KEY_LAT, 999);
@@ -154,6 +162,7 @@ public class GymResister extends AppCompatActivity {
                 uploadPhotoToStorage();
             }
         });
+        getAddressFromLocationData();
     }
 
     @Override
@@ -169,6 +178,47 @@ public class GymResister extends AppCompatActivity {
                     resizeImage(mSelectedImage);
                     mSelectedImage.setImageBitmap(resizedBit);
                 }
+        }
+    }
+
+    //get address and put it into the Address Text field
+    public void getAddressFromLocationData() {
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> listAddresses = geocoder.getFromLocation(mUserLocation.getLatitude(), mUserLocation.getLongitude(), 1);
+
+            if(listAddresses != null && listAddresses.size() > 0 ) {
+                Log.v(LOG_TAG, listAddresses.toString());
+                String address = "";
+
+                //도로명
+                if(listAddresses.get(0).getSubThoroughfare() != null) {
+                    address += listAddresses.get(0).getSubThoroughfare() + ", ";
+                }
+                //도로명(상위?)
+                if(listAddresses.get(0).getThoroughfare() != null) {
+                    address += listAddresses.get(0).getThoroughfare() + ", ";
+                }
+                if(listAddresses.get(0).getLocality() != null) {
+                    address += listAddresses.get(0).getLocality() + ", ";
+                }
+                if(listAddresses.get(0).getPostalCode() != null) {
+                    address += listAddresses.get(0).getPostalCode() + ", ";
+                }
+                if(listAddresses.get(0).getCountryName() != null) {
+                    address += listAddresses.get(0).getCountryName();
+                }
+
+                Toast.makeText(this, address, Toast.LENGTH_LONG).show();
+                Log.i(LOG_TAG, "result for address geocoding : " + address);
+                //300-13, Dangni-dong, Saha-gu, South Korea
+                //4, 새동림맨션당리동, 부산광역시, 604-010, 대한민국
+
+                //주소는 geocode 기준으로 변경
+                mEditGymLocation.setText(address);
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
         }
     }
     //delete data from storage
