@@ -217,15 +217,25 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             }
         };
 
-        Location lastKnownLocation = initLocationProvider();
-        mCurrentUserLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
 
-        //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
-        mUserLocationListener.setUserLocation(lastKnownLocation);
+        //마찬가지 권한이 없읋경우 onRequestResult에서 최초동작을 모두 실행해야 되므로 권한이 있을경우인 Else의 경우에도
+        //동일하게 모든동작을 기술해야 정상적으로 작동한다. 여기서 코드 중복이 굉장히 많이 발생하는데 아마 메서드로 모아서 써야할것 같다.일단 여기까지!!
+        } else {
+            initLocationProvider();
+            Log.v(LOG_TAG, "mCurrentLocation is : " + mCurrentUserLocation.toString());
+            mCurrentUserLatLng = new LatLng(mCurrentUserLocation.getLatitude(), mCurrentUserLocation.getLongitude());
+            //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
+            mUserLocationListener.setUserLocation(mCurrentUserLocation);
 
         /*gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));*/
-        CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+            CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
+            gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+        }
+
+
+
     }
 
     //if return = false => Default behavior : move to User's current location
@@ -244,6 +254,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if(ContextCompat.checkSelfPermission(getContext(),
                             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        initLocationProvider();
+
+                        mCurrentUserLatLng = new LatLng(mCurrentUserLocation.getLatitude(), mCurrentUserLocation.getLongitude());
+                        //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
+                        mUserLocationListener.setUserLocation(mCurrentUserLocation);
+
+        /*gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));*/
+                        CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
+                        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
                     }
                 }
                 break;
@@ -261,12 +280,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         }
     }
     //Init LocationProviders
-    public Location initLocationProvider() {
+    //check permission for location and Select Provider based on its condition
+    //and save the location info to mCurrentLocation variable
+    public void initLocationProvider() {
         int MIN_TIME_BW_UPDATES = 10000;
         int MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
         Location initLocation = null;
-        if(checkLocationPermission()) {
-            try {
+        int checkPermission = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        try {
+            if(checkPermission == PackageManager.PERMISSION_GRANTED) {
                 boolean isGPSEnabled = mLocationManager
                         .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
@@ -287,16 +309,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         }
                     }else {
-                            mLocationManager.requestLocationUpdates(
-                                    LocationManager.NETWORK_PROVIDER,
-                                    MIN_TIME_BW_UPDATES,
-                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, mLocationListener);
-                            Log.d("Network", "Network Enabled");
-                            if (mLocationManager != null) {
-                                initLocation = mLocationManager
-                                        .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                            }
+                        mLocationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, mLocationListener);
+                        Log.d("Network", "Network Enabled");
+                        if (mLocationManager != null) {
+                            initLocation = mLocationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         }
+                    }
                 } else {
                     //if all providers are unable, then initLocation equals to null
                     // in this case, use PassiveProvider(not accurate)
@@ -319,20 +341,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                         }
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(LOG_TAG, e.toString());
             }
-            //PASSIVE도 Error인경우에서 initLocation인 null일때 nullPointException 방지 + 메세지
-            if (initLocation == null) {
-                initLocation = new Location("");
-                initLocation.setLatitude(0);
-                initLocation.setLatitude(0);
-                Toast.makeText(getContext(), "can't find user location, Please check GPS, Network", Toast.LENGTH_LONG).show();
-                Log.d(LOG_TAG, "can't use Any Provider");
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(LOG_TAG, e.toString());
         }
-        return initLocation;
+        //PASSIVE도 Error인경우에서 initLocation인 null일때 nullPointException 방지 + 메세지
+        if (initLocation == null) {
+            initLocation = new Location("");
+            initLocation.setLatitude(0);
+            initLocation.setLatitude(0);
+            Toast.makeText(getContext(), "can't find user location, Please check GPS, Network", Toast.LENGTH_LONG).show();
+            Log.d(LOG_TAG, "can't use Any Provider");
+        }
+        mCurrentUserLocation = initLocation;
     }
 
     public boolean checkLocationPermission() {
