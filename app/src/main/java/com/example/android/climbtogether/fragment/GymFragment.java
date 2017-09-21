@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +24,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 
 /**
  * Created by MD on 2017-03-09.
  */
 
 public class GymFragment extends Fragment {
-    public static final String TAG = GymFragment.class.getName();
+    public static final String LOG_TAG = GymFragment.class.getName();
 
 //    GymAdapter mGymAdapter;
 
@@ -63,6 +65,7 @@ public class GymFragment extends Fragment {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         //reference point of DB
         mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
+        Log.i(LOG_TAG, "childe is : " + mGymDatabaseReference.toString());
 
         /*//add new Gym ArrayList
         ArrayList<Gym> gym = new ArrayList<Gym>();
@@ -126,6 +129,7 @@ public class GymFragment extends Fragment {
         mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
     }
 
+
     //리스트가 갱신될때 DB에서 새 data를 업데이트 하기위한 리스너
     //!! 중요 라이프사이클에 Listener를 꺼주는 옵션도 줘야 자원절약
     private void attachDatabaseListener() {
@@ -133,8 +137,15 @@ public class GymFragment extends Fragment {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Gym gym = dataSnapshot.getValue(Gym.class);
-                    /*mFirebaseRecyclerAdapter.(gym);*/
+
+                    /*for(DataSnapshot gymData : dataSnapshot.getChildren()) {
+                        Log.i(LOG_TAG, gymData.getKey());
+                        gymData = gymData.child("gymAddress");
+                    }*/
+
+
+                    /*Gym gym = dataSnapshot.getValue(Gym.class);
+                    mFirebaseRecyclerAdapter(gym);*/
                 }
 
                 @Override

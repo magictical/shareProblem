@@ -95,7 +95,7 @@ public class GymDetailActivity extends AppCompatActivity {
                         .into(mDetailGymImage);
                 mDetailGymName.setText(gym.getGymName());
                 mDetailContactNumb.setText(gym.getGymContact());
-                mDetailLocation.setText(gym.getGymLocation());
+                mDetailLocation.setText(gym.getGymAddress());
                 mDetailPayment.setText(Integer.toString(gym.getGymPrice()));
             }
 

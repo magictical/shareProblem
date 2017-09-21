@@ -47,7 +47,7 @@ public class GymAdapter extends ArrayAdapter<Gym> {
         gymName.setText(currentGym.getGymName());
 
         TextView gymLocation = (TextView) listScraps.findViewById(R.id.text_gym_location);
-        gymLocation.setText(currentGym.getGymLocation());
+        gymLocation.setText(currentGym.getGymAddress());
 
         //set Gym contacts
         TextView gymContacts = (TextView) listScraps.findViewById(R.id.text_gym_contacts);

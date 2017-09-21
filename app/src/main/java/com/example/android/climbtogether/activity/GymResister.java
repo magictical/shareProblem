@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.android.climbtogether.Model.Gym;
 import com.example.android.climbtogether.R;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import static android.os.Build.VERSION_CODES.M;
 
 /**
  * Created by MD on 2017-02-16.
@@ -55,9 +57,7 @@ public class GymResister extends AppCompatActivity {
     private EditText mEditGymLocation;
     private EditText mEditGymContact;
     private EditText mEditGymPrice;
-
     private ImageView mSelectedImage;
-
 
     private Button mAddGymButton;
     //button for select image
@@ -85,6 +85,21 @@ public class GymResister extends AppCompatActivity {
 
     private Location mUserLocation;
 
+    private double mGymLat;
+    private double mGymLng;
+    private double mGymAlt;
+
+    //accuracy
+    private float mProviderAccuracy;
+    //bearing
+    private float mProviderBearing;
+    //provider
+    private  String mProviderName;
+    //time
+    private long mResisteredTime;
+
+
+
     private double mUserLatKey;
     private double mUserLngKey;
 
@@ -100,6 +115,8 @@ public class GymResister extends AppCompatActivity {
             throw new IllegalArgumentException("Must pass the USER_LOCATION_KEY");
         }
         Toast.makeText(this, "User Location isis :" + mUserLocation.toString(), Toast.LENGTH_LONG).show();
+
+
 
 
         /*mUserLatKey = getIntent().getDoubleExtra(EXTRA_USER_LOCATION_KEY_LAT, 999);
@@ -185,7 +202,16 @@ public class GymResister extends AppCompatActivity {
     public void getAddressFromLocationData() {
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
-            List<Address> listAddresses = geocoder.getFromLocation(mUserLocation.getLatitude(), mUserLocation.getLongitude(), 1);
+            mGymLat = mUserLocation.getLatitude();
+            mGymLng = mUserLocation.getLongitude();
+            mGymAlt = mUserLocation.getAltitude();
+
+            mProviderAccuracy = mUserLocation.getAccuracy();
+            mProviderBearing = mUserLocation.getBearing();
+            mProviderName = mUserLocation.getProvider();
+            mResisteredTime = mUserLocation.getTime();
+
+            List<Address> listAddresses = geocoder.getFromLocation(mGymLat, mGymLng, 5);
 
             if(listAddresses != null && listAddresses.size() > 0 ) {
                 Log.v(LOG_TAG, listAddresses.toString());
@@ -221,6 +247,7 @@ public class GymResister extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
     //delete data from storage
     public void deleteOutDatedPhotoInStorage(StorageReference previousRef) {
         previousRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -235,6 +262,8 @@ public class GymResister extends AppCompatActivity {
             }
         });
     }
+
+
 
     public void uploadPhotoToStorage() {
         //현재 선택한 photo의 ref
@@ -268,17 +297,35 @@ public class GymResister extends AppCompatActivity {
                             }
                             e.printStackTrace();
                         }
-                        Gym gym = new Gym(gymName, gymLocation, gymPhotoUri, gymContact, gymPrice);
+                        //Location, LatLng are included
+                        Gym gym = new Gym(gymName, gymLocation, gymContact, gymPrice, gymPhotoUri,
+                                mGymLat, mGymLng, mGymLat, mProviderAccuracy, mProviderBearing,
+                                mProviderName, mResisteredTime);
                         mGymDatabaseReference.push().setValue(gym);
+
+                        /*mGymLocationReference.push().setValue(mUserLocation);*/
 
                         Log.v(LOG_TAG, "gym name is " + gymName + "\n"
                                 + "gym Location is " + gymLocation + "\n"
                                 + "gym Contact is " + gymContact + "\n"
                                 + "gym Price is " + gymPrice + "\n"
-                                + "gym Photo is " + gymPhotoUri);
+                                + "gym PhotoUri is " + gymPhotoUri + "\n"
+                                + "gym Lat is " + mGymLat + "\n"
+                                + "gym Lng is " + mGymLng + "\n"
+                                + "gym Alt is " + mGymAlt
+                        );
+                        Toast.makeText(getBaseContext(), "gym name is " + gymName + "\n"
+                                + "gym Location is " + gymLocation + "\n"
+                                + "gym Contact is " + gymContact + "\n"
+                                + "gym Price is " + gymPrice + "\n"
+                                + "gym PhotoUri is " + gymPhotoUri + "\n"
+                                + "gym Lat is " + mGymLat + "\n"
+                                + "gym Lng is " + mGymLng + "\n"
+                                + "gym Alt is " + mGymAlt, Toast.LENGTH_SHORT).show();
 
-                        Toast.makeText(GymResister.this, gymName + " " + gymLocation+ " " + gymContact
-                                + gymPrice+ " "+ gymPhotoUri, Toast.LENGTH_SHORT).show();
+                        Log.v(LOG_TAG, gymName + " " + gymLocation+ " " + gymContact
+                                + gymPrice + " "+ gymPhotoUri + " " +  String.valueOf(mGymLat + " "
+                                + mGymLng + " " + mGymAlt ));
                     }
                 });
 

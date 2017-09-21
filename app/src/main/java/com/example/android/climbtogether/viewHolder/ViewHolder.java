@@ -53,7 +53,7 @@ public class ViewHolder extends RecyclerView.ViewHolder {
                 mGymName.setText(gym.getGymName());
 
                 TextView mGymLocation = (TextView) mView.findViewById(R.id.text_gym_location);
-                mGymLocation.setText(gym.getGymLocation());
+                mGymLocation.setText(gym.getGymAddress());
 
                 TextView mGymContacts = (TextView) mView.findViewById(R.id.text_gym_contacts);
                 mGymContacts.setText(gym.getGymContact());
