@@ -75,17 +75,6 @@ public class GymFragment extends Fragment {
         ListView list = (ListView) rootView.findViewById(R.id.gym_list);
         list.setAdapter(mGymAdapter);*/
 
-
-        //Move to Gym resister activity when it clicked
-        mGymResister = (Button) rootView.findViewById(R.id.resister_gym_button);
-        mGymResister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent problemIntent = new Intent(getActivity(), GymResister.class);
-                startActivity(problemIntent);
-            }
-        });
-
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.gym_list);
         mRecyclerView.setHasFixedSize(true);
 

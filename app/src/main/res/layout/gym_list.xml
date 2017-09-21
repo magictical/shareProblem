@@ -14,14 +14,4 @@
         android:drawSelectorOnTop="true"
         android:orientation="vertical"/>
 
-    <Button
-        android:id="@+id/resister_gym_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/gym_list"
-        android:layout_alignRight="@id/gym_list"
-        android:text="resister Gym"
-        android:textSize="16dp"
-        tool:text="button"/>
-
 </RelativeLayout>
