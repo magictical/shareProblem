@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.android.climbtogether.Model.Gym;
 import com.example.android.climbtogether.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,6 +27,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -68,6 +76,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private static Location mCurrentUserLocation;
     private LatLng mCurrentUserLatLng;
 
+    //Add FirebaseDatabase
+    private DatabaseReference mGymDbReference;
     /**
      * Request code for location permission request.
      *
@@ -108,13 +118,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        Log.d(LOG_TAG, "onCreate called");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onCreateView called");
 
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
@@ -133,6 +143,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onAttach(Context context) {
+        Log.d(LOG_TAG, "onAttach called");
         super.onAttach(context);
         if(context instanceof UserLocationListener) {
             mUserLocationListener = (UserLocationListener) context;
@@ -154,8 +165,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(GoogleMap googleMap) {
 
         gMap = googleMap;
+        Log.d(LOG_TAG, "onMapReady called and gMap is not null");
         gMap.setOnMyLocationButtonClickListener(this);
-
 
         //퍼미션 로직중요!
         //퍼미션 요청 -> onRequestPermissionResult 에서 처리 Fragment 인 경우 ActivityCompat.requestPermission 이 아닌
@@ -188,7 +199,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                     }
                     mUserLocationListener.setUserLocation(location);
                     LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                    gMap.clear();
                     /*gMap.addMarker(new MarkerOptions().position(userLocation).title("I'm here(new Position"));*/
                     gMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
 
@@ -233,9 +243,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
             gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
         }
-
-
-
+        if(gMap != null) {
+            loadMapMarkers();
+            Log.d(LOG_TAG, "loaded from MapReady 252");
+        }
     }
 
     //if return = false => Default behavior : move to User's current location
@@ -382,6 +393,63 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             isPermissionGranted = true;
         }
         return isPermissionGranted;
+    }
+    //display gy
+    public void loadMapMarkers() {
+        if(gMap != null) {
+            mGymDbReference = FirebaseDatabase.getInstance().getReference().child("gym_data");
+            mGymDbReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot c : dataSnapshot.getChildren()) {
+                        Gym g = c.getValue(Gym.class);
+
+                        LatLng marker = new LatLng(g.getGymLat(), g.getGymLng());
+                        String markerName = g.getGymName();
+                        gMap.addMarker(new MarkerOptions().position(marker).title(markerName));
+                        Log.d(LOG_TAG, markerName);
+                    }
+
+                }
+                //클래스를 직접 불러와서 for 문돌리기랑 비교교
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(LOG_TAG, "onStart called");
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(LOG_TAG, "onActivityCreated called");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(LOG_TAG, "onResume called");
+
+        if(gMap == null) {
+            Log.d(LOG_TAG, "gMap is null");
+        } else {
+            loadMapMarkers();
+            Log.d(LOG_TAG, "gMpa has values" + gMap.toString());
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "onPause called");
     }
 
     /**
