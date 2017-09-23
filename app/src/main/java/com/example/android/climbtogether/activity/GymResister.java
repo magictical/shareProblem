@@ -299,7 +299,7 @@ public class GymResister extends AppCompatActivity {
                         }
                         //Location, LatLng are included
                         Gym gym = new Gym(gymName, gymLocation, gymContact, gymPrice, gymPhotoUri,
-                                mGymLat, mGymLng, mGymLat, mProviderAccuracy, mProviderBearing,
+                                mGymLat, mGymLng, mGymAlt, mProviderAccuracy, mProviderBearing,
                                 mProviderName, mResisteredTime);
                         mGymDatabaseReference.push().setValue(gym);
 
