@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.android.climbtogether.Model.Gym;
+import com.example.android.climbtogether.Model.GymClusteringMarker;
 import com.example.android.climbtogether.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +34,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.clustering.ClusterManager;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -75,6 +79,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     private static Location mCurrentUserLocation;
     private LatLng mCurrentUserLatLng;
+
+    //Add ClusterManager for managing map markers
+    private ClusterManager<GymClusteringMarker> mClusterManager;
 
     //Add FirebaseDatabase
     private DatabaseReference mGymDbReference;
@@ -270,10 +277,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                         mCurrentUserLatLng = new LatLng(mCurrentUserLocation.getLatitude(), mCurrentUserLocation.getLongitude());
                         //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
                         mUserLocationListener.setUserLocation(mCurrentUserLocation);
-
-        /*gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));*/
-                        CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
-                        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
                     }
                 }
                 break;
@@ -394,27 +397,45 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         }
         return isPermissionGranted;
     }
-    //display gy
+    //This Method Manage all Location of the Gyms based on its location through FirebaseDatabase
+    //and if gyms density is high, it will use Map clustering
     public void loadMapMarkers() {
         if(gMap != null) {
+
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng((float) mCurrentUserLocation.getLatitude(),
+                    (float)mCurrentUserLocation.getLongitude()), 10));
+
+            mClusterManager = new ClusterManager<GymClusteringMarker>(getContext(), gMap);
+            //setOnCameraIdleListener : Sets a callback that is invoked when camera movement has ended.
+            gMap.setOnCameraIdleListener(mClusterManager);
+            //A List for containing GymClusteringMarkers
+            final List<GymClusteringMarker> clusterList = new ArrayList<GymClusteringMarker>();
+
             mGymDbReference = FirebaseDatabase.getInstance().getReference().child("gym_data");
             mGymDbReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    //get all data in FireBase's DB and save it into the clusterList
                     for(DataSnapshot c : dataSnapshot.getChildren()) {
                         Gym g = c.getValue(Gym.class);
+                        Log.d(LOG_TAG, g.getGymName().toString());
 
-                        LatLng marker = new LatLng(g.getGymLat(), g.getGymLng());
+                        //no need to use marker anymore! use ClusterManager instead.
+                        /*LatLng marker = new LatLng(g.getGymLat(), g.getGymLng());
                         String markerName = g.getGymName();
                         gMap.addMarker(new MarkerOptions().position(marker).title(markerName));
-                        Log.d(LOG_TAG, markerName);
+                        Log.d(LOG_TAG, markerName);*/
+                        GymClusteringMarker gymCluster = new GymClusteringMarker(g.getGymLat(), g.getGymLng());
+                        clusterList.add(gymCluster);
                     }
-
+                    //add it to manager
+                    mClusterManager.addItems(clusterList);
+                    //execute clustering!
+                    mClusterManager.cluster();
                 }
                 //클래스를 직접 불러와서 for 문돌리기랑 비교교
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
         }
