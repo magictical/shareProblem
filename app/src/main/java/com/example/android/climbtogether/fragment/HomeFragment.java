@@ -552,7 +552,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             mTextView.setLayoutParams(new ViewGroup.LayoutParams(mXcoordDimension, mYcoordDimension));
 
             //지도에 표시될이름에 TV에 사이즈맞춰서 표시되도록
-            //mTextView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            mTextView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
             mTextView.setPadding(padding, padding, padding, padding);
@@ -598,6 +598,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             //shows name of Gyms
             Log.v(LOG_TAG, "onBeforeCluster called");
             String name = gymClusteringMarker.getName();
+            if(name.length() >= 16) {
+                name =  name.substring(0, 15) + "...";
+            }
             mTextView.setTextSize(15);
             mTextView.setText(name);
 
