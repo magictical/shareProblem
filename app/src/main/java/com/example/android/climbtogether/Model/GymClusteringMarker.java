@@ -1,5 +1,8 @@
 package com.example.android.climbtogether.Model;
 
+import android.view.View;
+import android.widget.ArrayAdapter;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
@@ -10,11 +13,29 @@ import com.google.maps.android.clustering.ClusterItem;
 
 //Add Class for clustering the gym markers.
 //this will implements ClusterItem
-public class GymClusteringMarker implements ClusterItem{
+public class GymClusteringMarker implements ClusterItem  {
     private final LatLng mPosition;
+    private String mName;
+    private String mContent;
+    private String mGymImgUri;
 
-    public GymClusteringMarker(double Lat, double Lng) {
+    public GymClusteringMarker(String title, String content, String imgUri, double Lat, double Lng) {
+        mName = title;
+        mContent = content;
+        mGymImgUri = imgUri;
         mPosition = new LatLng(Lat, Lng);
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public String getContent() {
+        return mContent;
+    }
+
+    public String getGymImgUri() {
+        return mGymImgUri;
     }
 
     @Override
@@ -24,11 +45,11 @@ public class GymClusteringMarker implements ClusterItem{
 
     @Override
     public String getTitle() {
-        return null;
+        return mName;
     }
 
     @Override
     public String getSnippet() {
-        return null;
+        return mGymImgUri;
     }
 }
