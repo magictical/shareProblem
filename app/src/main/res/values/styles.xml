@@ -1,11 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">#03A9F4</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -17,5 +18,19 @@
            parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
     <style name="AppTheme.PopupOverlay"
            parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="roboto_font_edit_text" parent="Theme.AppCompat.Light.DarkActionBar" >
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textCursorDrawable">@drawable/cursor_color</item>
+        <item name="android:textColorHint">#9E9E9E</item>
+    </style>
+
+    <style name="roboto_font_base_text">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#212121</item>
+    </style>
+
 
 </resources>
