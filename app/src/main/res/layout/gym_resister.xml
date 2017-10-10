@@ -8,32 +8,33 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="2000dp"
-        android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="0dp">
 
         <ImageView
             android:id="@+id/resister_gym_photo_image_view"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:src="@drawable/add_btn"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp"/>
+            tools:layout_editor_absoluteY="8dp"
+            tools:layout_editor_absoluteX="8dp"/>
 
 
         <TextView
             android:id="@+id/resister_title_gym_name_"
-            style="@style/roboto_font_base_text"
+            style="@style/roboto_font_title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="Enter Gym Name"
+            android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="16dp"
             app:layout_constraintTop_toBottomOf="@+id/resister_gym_photo_image_view"/>
 
         <EditText
@@ -42,23 +43,21 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintDimensionRatio="w,8.5:1"
-            app:layout_constraintHorizontal_bias="0.517"
             app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="8dp"
             app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/resister_title_gym_name_"/>
 
         <TextView
             android:id="@+id/resister_title_gym_location"
-            style="@style/roboto_font_base_text"
-            android:layout_width="0dp"
+            style="@style/roboto_font_title_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Gym Location"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/resister_gym_name"/>
 
         <EditText
@@ -66,24 +65,22 @@
             style="@style/roboto_font_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/resister_title_gym_location"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginRight="8dp"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintDimensionRatio="w,8.5:1"
-            />
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/resister_title_gym_location"/>
 
         <TextView
             android:id="@+id/resister_title_gym_contact"
-            style="@style/roboto_font_base_text"
-            android:layout_width="0dp"
+            style="@style/roboto_font_title_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="Gym Contact"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/resister_gym_location"
-            android:layout_marginLeft="0dp"
+            android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"/>
 
         <EditText
@@ -91,42 +88,34 @@
             style="@style/roboto_font_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="8dp"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintTop_toBottomOf="@+id/resister_title_gym_contact"
             android:layout_marginTop="8dp"
-            app:layout_constraintDimensionRatio="w,8.5:1"/>
+            app:layout_constraintTop_toBottomOf="@+id/resister_title_gym_contact"/>
 
         <TextView
             android:id="@+id/resister_title_gym_price"
-            style="@style/roboto_font_base_text"
+            style="@style/roboto_font_title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Gym Price"
-            android:layout_marginLeft="0dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/resister_gym_contact"/>
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/resister_gym_contact"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"/>
 
         <EditText
             android:id="@+id/resister_gym_price"
             style="@style/roboto_font_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="16dp"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintDimensionRatio="w,8.5:1"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            android:layout_marginTop="7dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="9dp"
             app:layout_constraintTop_toBottomOf="@+id/resister_title_gym_price"/>
 
         <Button
@@ -134,33 +123,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:text="Add a Gym"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/resister_gym_price"/>
-
-        <ProgressBar
-            android:id="@+id/gym_image_progressbar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="110dp"
-            android:layout_height="110dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:indeterminateDrawable="@drawable/style_progressbar"
-            android:progressDrawable="@drawable/style_progressbar"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/resister_gym_price"
+            android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.501"
-            tools:layout_editor_absoluteY="170dp"/>
-
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 

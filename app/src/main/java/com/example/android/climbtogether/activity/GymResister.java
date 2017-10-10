@@ -1,17 +1,19 @@
 package com.example.android.climbtogether.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,21 +21,18 @@ import android.widget.Toast;
 
 import com.example.android.climbtogether.Model.Gym;
 import com.example.android.climbtogether.R;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static android.os.Build.VERSION_CODES.M;
 
 /**
  * Created by MD on 2017-02-16.
@@ -74,8 +73,6 @@ public class GymResister extends AppCompatActivity {
     private String gymPhotoUri;
 
     private Uri mImageUri;
-
-    private Bitmap resizedBit;
 
     //String for getting putExtra data(User Location)
     public  static final String EXTRA_USER_LOCATION_KEY_LAT = "user_location_key_lat";
@@ -160,15 +157,7 @@ public class GymResister extends AppCompatActivity {
         //select img from sd card using by Intent and display img
         mSelectedImage = (ImageView) findViewById(R.id.resister_gym_photo_image_view);
 
-        //add listener to image button
-        mSelectedImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent photoSelectorIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                photoSelectorIntent.setType("image/*");
-                startActivityForResult(photoSelectorIntent, RC_SELECT_PHOTO);
-            }
-        });
+
 
         //Gym Add 버튼 바인딩
         mAddGymButton = (Button)findViewById(R.id.add_gym);
@@ -180,20 +169,29 @@ public class GymResister extends AppCompatActivity {
             }
         });
         getAddressFromLocationData();
+
+        //add listener to image button
+        mSelectedImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent photoSelectorIntent = new Intent();
+                photoSelectorIntent.setType("image/*");
+                photoSelectorIntent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(photoSelectorIntent, "Select Picture"), RC_SELECT_PHOTO);
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntentData) {
         super.onActivityResult(requestCode, resultCode, returnIntentData);
 
-
         switch(requestCode) {
             case RC_SELECT_PHOTO:
                 if (resultCode == RESULT_OK) {
                     mImageUri = returnIntentData.getData();
-                    mSelectedImage.setImageURI(mImageUri);
-                    resizeImage(mSelectedImage);
-                    mSelectedImage.setImageBitmap(resizedBit);
+                    /*mSelectedImage.setImageURI(mImageUri);*/
+                    mSelectedImage.setImageBitmap(resizeImage(mImageUri));
                 }
         }
     }
@@ -267,98 +265,144 @@ public class GymResister extends AppCompatActivity {
 
     public void uploadPhotoToStorage() {
         //현재 선택한 photo의 ref
-        StorageReference presentGymPhotoRef =
-                mGymStorageReferences.child(mImageUri.getLastPathSegment());
-        //Upload file to Firebase Storage
-        presentGymPhotoRef.putFile(mImageUri)
-                .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Uri downloadUri = taskSnapshot.getDownloadUrl();
-                        //save gymPhoto Uri to instance
 
-                        gymPhotoUri = downloadUri.toString();
-                        gymName = mEditGymName.getText().toString();
-                        gymLocation = mEditGymLocation.getText().toString();
-                        gymContact = mEditGymContact.getText().toString();
+        //block user interaction on the screen while uploading
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+        if(mImageUri != null) {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            StorageReference presentGymPhotoRef =
+                    mGymStorageReferences.child(mImageUri.getLastPathSegment());
+            //Upload file to Firebase Storage
+            //TODO : 현재 업로드되는 파일은 리사이즈된것이 아닌 URI에서 ref된 파일 그 자체라 아직은
+            // Resize하는 의미가 UI에 표시되는것 말고는 없다 이거 수정해야됨
+            presentGymPhotoRef.putFile(mImageUri)
+                    .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            //if upload is successful, hide progress bar
+                            Uri downloadUri = taskSnapshot.getDownloadUrl();
+
+                            //save gymPhoto Uri to instance
+                            gymPhotoUri = downloadUri.toString();
+                            gymName = mEditGymName.getText().toString();
+                            gymLocation = mEditGymLocation.getText().toString();
+                            gymContact = mEditGymContact.getText().toString();
 
                 /*Log.v(LOG_TAG, "gymPhotoUri is " + gymPhotoUri);
                 Log.v(LOG_TAG, "downloadUrl is " + downloadUri.toString());
 
                 gymPhotoUri = downloadUri.toString();*/
-                        //upload된 사진의 uri가 사용됨
+                            //upload된 사진의 uri가 사용됨
 
-                        try{
-                            gymPrice = Integer.valueOf(mEditGymPrice.getText().toString());
+                            try{
+                                gymPrice = Integer.valueOf(mEditGymPrice.getText().toString());
 
-                        } catch (Exception e) {
-                            if(mEditGymPrice.getText().toString().equals("") || mSelectedImage.equals("")) {
-                                Toast.makeText(GymResister.this, "가격을 입력해주세요(필수)",Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                if(mEditGymPrice.getText().toString().equals("") || mSelectedImage.equals("")) {
+                                    Toast.makeText(GymResister.this, "가격을 입력해주세요(필수)",Toast.LENGTH_SHORT).show();
+                                }
+                                e.printStackTrace();
                             }
-                            e.printStackTrace();
-                        }
-                        //Location, LatLng are included
-                        Gym gym = new Gym(gymName, gymLocation, gymContact, gymPrice, gymPhotoUri,
-                                mGymLat, mGymLng, mGymAlt, mProviderAccuracy, mProviderBearing,
-                                mProviderName, mResisteredTime);
-                        mGymDatabaseReference.push().setValue(gym);
+                            //Location, LatLng are included
+                            Gym gym = new Gym(gymName, gymLocation, gymContact, gymPrice, gymPhotoUri,
+                                    mGymLat, mGymLng, mGymAlt, mProviderAccuracy, mProviderBearing,
+                                    mProviderName, mResisteredTime);
+                            mGymDatabaseReference.push().setValue(gym);
 
                         /*mGymLocationReference.push().setValue(mUserLocation);*/
 
-                        Log.v(LOG_TAG, "gym name is " + gymName + "\n"
-                                + "gym Location is " + gymLocation + "\n"
-                                + "gym Contact is " + gymContact + "\n"
-                                + "gym Price is " + gymPrice + "\n"
-                                + "gym PhotoUri is " + gymPhotoUri + "\n"
-                                + "gym Lat is " + mGymLat + "\n"
-                                + "gym Lng is " + mGymLng + "\n"
-                                + "gym Alt is " + mGymAlt
-                        );
-                        Toast.makeText(getBaseContext(), "gym name is " + gymName + "\n"
-                                + "gym Location is " + gymLocation + "\n"
-                                + "gym Contact is " + gymContact + "\n"
-                                + "gym Price is " + gymPrice + "\n"
-                                + "gym PhotoUri is " + gymPhotoUri + "\n"
-                                + "gym Lat is " + mGymLat + "\n"
-                                + "gym Lng is " + mGymLng + "\n"
-                                + "gym Alt is " + mGymAlt, Toast.LENGTH_SHORT).show();
+                            Log.v(LOG_TAG, "gym name is " + gymName + "\n"
+                                    + "gym Location is " + gymLocation + "\n"
+                                    + "gym Contact is " + gymContact + "\n"
+                                    + "gym Price is " + gymPrice + "\n"
+                                    + "gym PhotoUri is " + gymPhotoUri + "\n"
+                                    + "gym Lat is " + mGymLat + "\n"
+                                    + "gym Lng is " + mGymLng + "\n"
+                                    + "gym Alt is " + mGymAlt
+                            );
+                            Toast.makeText(getBaseContext(), "gym name is " + gymName + "\n"
+                                    + "gym Location is " + gymLocation + "\n"
+                                    + "gym Contact is " + gymContact + "\n"
+                                    + "gym Price is " + gymPrice + "\n"
+                                    + "gym PhotoUri is " + gymPhotoUri + "\n"
+                                    + "gym Lat is " + mGymLat + "\n"
+                                    + "gym Lng is " + mGymLng + "\n"
+                                    + "gym Alt is " + mGymAlt, Toast.LENGTH_SHORT).show();
 
-                        Log.v(LOG_TAG, gymName + " " + gymLocation+ " " + gymContact
-                                + gymPrice + " "+ gymPhotoUri + " " +  String.valueOf(mGymLat + " "
-                                + mGymLng + " " + mGymAlt ));
-                    }
-                });
+                            Log.v(LOG_TAG, gymName + " " + gymLocation+ " " + gymContact
+                                    + gymPrice + " "+ gymPhotoUri + " " +  String.valueOf(mGymLat + " "
+                                    + mGymLng + " " + mGymAlt ));
 
-    }
+                            progressDialog.dismiss();
+                            //move to home fragment
 
-    public void resizeImage(ImageView view) {
-        //get a Image obj from ImageView
+                            //get back user interaction on screen
+                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            //if failure with upload task
+                            //hide the progressbar
+                            progressDialog.dismiss();
+                            //get back user interaction on screen
+                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
-        Bitmap bit = ((BitmapDrawable) view.getDrawable()).getBitmap();
-
-        int width = bit.getWidth();
-        int height = bit.getHeight();
-        float rate = 0.0f;
-
-        int maxResolution = 1920;
-
-        int newWidth = width;
-        int newHeight = height;
-
-        if(width > height) {
-            if(maxResolution < width) {
-                rate = maxResolution/ (float) width;
-                newHeight = (int) (height * rate);
-                newWidth = maxResolution;
-            }
-
-        } else {
-            if(maxResolution < height) {
-                rate = maxResolution/(float)height;
-                newWidth = (int) (width * rate);
-                newHeight = maxResolution;
-            }
+                            double progress = ((100.0) * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                            progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
+                        }
+                    });
         }
-        resizedBit = Bitmap.createScaledBitmap(bit, newWidth, newHeight, true);
     }
+
+    public Bitmap resizeImage(Uri uri) {
+        //TODO : 이미지가 너무작으면 Dialog로 알려주고 필터링 기준은 640 * 480정도?
+
+        Bitmap reSizedBit = null;
+        /*Bitmap bit = ((BitmapDrawable) view.getDrawable()).getBitmap();*/
+        try{
+            Bitmap bit = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+
+            int width = bit.getWidth();
+            int height = bit.getHeight();
+            float rate = 0.0f;
+
+            int maxResolution = 1920;
+
+            int newWidth = width;
+            int newHeight = height;
+
+            if(width > height) {
+                if(maxResolution < width) {
+                    rate = maxResolution/ (float) width;
+                    newHeight = (int) (height * rate);
+                    newWidth = maxResolution;
+                }
+
+            } else {
+                if(maxResolution < height) {
+                    rate = maxResolution/(float)height;
+                    newWidth = (int) (width * rate);
+                    newHeight = maxResolution;
+                }
+            }
+             reSizedBit = Bitmap.createScaledBitmap(bit, newWidth, newHeight, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return reSizedBit;
+    }
+
 }
