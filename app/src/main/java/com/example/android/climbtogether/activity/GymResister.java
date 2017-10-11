@@ -11,7 +11,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -44,6 +47,8 @@ public class GymResister extends AppCompatActivity {
     //Constant for photo upload to storage requestCode
     public static final int RC_UPLOAD_PHOTO = 200;
     public static final String LOG_TAG = GymResister.class.getName();
+
+    private Toolbar mToolbar;
 
     private String gymName;
     private String gymLocation;
@@ -107,6 +112,11 @@ public class GymResister extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gym_resister);
 
+        //add toolbar for upload function on the action bar
+        //attaching layout to the Toolbar object
+        mToolbar = (Toolbar) findViewById(R.id.resister_toolbar);
+        setSupportActionBar(mToolbar);
+
         mUserLocation = getIntent().getExtras().getParcelable(USER_LOCATION_KEY);
         if(mUserLocation == null) {
             throw new IllegalArgumentException("Must pass the USER_LOCATION_KEY");
@@ -158,16 +168,6 @@ public class GymResister extends AppCompatActivity {
         mSelectedImage = (ImageView) findViewById(R.id.resister_gym_photo_image_view);
 
 
-
-        //Gym Add 버튼 바인딩
-        mAddGymButton = (Button)findViewById(R.id.add_gym);
-        mAddGymButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Add 버튼을 누르면 업로드를 하고 업로드된 사진의 uri를 갱신함
-                uploadPhotoToStorage();
-            }
-        });
         getAddressFromLocationData();
 
         //add listener to image button
@@ -180,6 +180,23 @@ public class GymResister extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(photoSelectorIntent, "Select Picture"), RC_SELECT_PHOTO);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_upload_button, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_upload_data:
+                uploadPhotoToStorage();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -294,12 +311,6 @@ public class GymResister extends AppCompatActivity {
                             gymLocation = mEditGymLocation.getText().toString();
                             gymContact = mEditGymContact.getText().toString();
 
-                /*Log.v(LOG_TAG, "gymPhotoUri is " + gymPhotoUri);
-                Log.v(LOG_TAG, "downloadUrl is " + downloadUri.toString());
-
-                gymPhotoUri = downloadUri.toString();*/
-                            //upload된 사진의 uri가 사용됨
-
                             try{
                                 gymPrice = Integer.valueOf(mEditGymPrice.getText().toString());
 
@@ -315,7 +326,6 @@ public class GymResister extends AppCompatActivity {
                                     mProviderName, mResisteredTime);
                             mGymDatabaseReference.push().setValue(gym);
 
-                        /*mGymLocationReference.push().setValue(mUserLocation);*/
 
                             Log.v(LOG_TAG, "gym name is " + gymName + "\n"
                                     + "gym Location is " + gymLocation + "\n"
@@ -344,6 +354,9 @@ public class GymResister extends AppCompatActivity {
 
                             //get back user interaction on screen
                             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            //TODO : add function for move to homeFragment
+                            finish();
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -351,6 +364,7 @@ public class GymResister extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             //if failure with upload task
                             //hide the progressbar
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                             progressDialog.dismiss();
                             //get back user interaction on screen
                             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
