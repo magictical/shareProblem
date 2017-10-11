@@ -10,13 +10,13 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start" >
 
-    <!--프로필화면 사이트이름까지 -->
+
     <include
         layout="@layout/app_bar_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-
+    <!--프로필화면 사이트이름(header) -->
     <!--홈부터 마지막까지-->
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
