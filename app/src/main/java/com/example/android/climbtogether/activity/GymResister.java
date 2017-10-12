@@ -114,7 +114,7 @@ public class GymResister extends AppCompatActivity {
 
         //add toolbar for upload function on the action bar
         //attaching layout to the Toolbar object
-        mToolbar = (Toolbar) findViewById(R.id.resister_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_resister_gym);
         setSupportActionBar(mToolbar);
 
         mUserLocation = getIntent().getExtras().getParcelable(USER_LOCATION_KEY);
@@ -355,7 +355,8 @@ public class GymResister extends AppCompatActivity {
                             //get back user interaction on screen
                             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             //TODO : add function for move to homeFragment
-                            finish();
+                            Intent intent = new Intent(GymResister.this, MainActivity.class);
+                            startActivity(intent);
 
                         }
                     })

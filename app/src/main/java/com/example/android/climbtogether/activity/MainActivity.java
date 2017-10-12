@@ -399,16 +399,23 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(LOG_TAG, "Main onStart called");
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(LOG_TAG, "Main onResume called");
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(LOG_TAG, "Main onPause called");
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
