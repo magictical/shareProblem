@@ -98,14 +98,14 @@ public class GymFragment extends Fragment {
                 mGymDatabaseReference
         ) {
             @Override
-            protected void populateViewHolder(ViewHolder viewHolder, Gym model, int position) {
-                final DatabaseReference gymRef = getRef(position);
-                //Set click listener for the Gym detail view
-                final String gymDetailKey = gymRef.getKey();
+            protected void populateViewHolder(ViewHolder viewHolder, Gym model, final int position) {
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        final DatabaseReference gymRef = getRef(position);
+                        //Set click listener for the Gym detail view
+                        final String gymDetailKey = gymRef.getKey();
                         //launch gymDetailView
                         Intent intent = new Intent(getActivity(), GymDetailActivity.class);
                         intent.putExtra(GymDetailActivity.EXTRA_GYM_DETAIL_KEY, gymDetailKey);

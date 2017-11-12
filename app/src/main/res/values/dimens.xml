@@ -9,4 +9,9 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="profile_width">75dp</dimen>
     <dimen name="profile_height">75dp</dimen>
+
+    <!--default size for custom Marker profile-->
+    <dimen name="custom_profile_image_Xcoord">120dp</dimen>
+    <dimen name="custom_profile_image_Ycoord">23dp</dimen>
+    <dimen name="custom_profile_padding">2dp</dimen>
 </resources>

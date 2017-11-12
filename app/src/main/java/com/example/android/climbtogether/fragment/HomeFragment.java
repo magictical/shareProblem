@@ -3,6 +3,7 @@ package com.example.android.climbtogether.fragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,24 +18,37 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.climbtogether.Model.Gym;
+import com.example.android.climbtogether.Model.GymClusteringMarker;
 import com.example.android.climbtogether.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,7 +58,7 @@ import static android.content.Context.LOCATION_SERVICE;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback , ClusterManager.OnClusterItemInfoWindowClickListener<GymClusteringMarker> {
 
     public static final String LOG_TAG = HomeFragment.class.getName();
 
@@ -75,6 +89,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     private static Location mCurrentUserLocation;
     private LatLng mCurrentUserLatLng;
+
+    //Add ClusterManager for managing map markers
+    private ClusterManager<GymClusteringMarker> mClusterManager;
+
+    private ClusterManager.OnClusterItemInfoWindowClickListener mOnClusterItemInfoWindowClickListener;
 
     //Add FirebaseDatabase
     private DatabaseReference mGymDbReference;
@@ -270,10 +289,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                         mCurrentUserLatLng = new LatLng(mCurrentUserLocation.getLatitude(), mCurrentUserLocation.getLongitude());
                         //mCurrentLocation null에서 값을 추가해주고  UserLocationListener 인터페이스의 메서드 실행
                         mUserLocationListener.setUserLocation(mCurrentUserLocation);
-
-        /*gMap.addMarker(new MarkerOptions().position(mCurrentUserLatLng).title("I'm here"));*/
-                        CameraPosition position = CameraPosition.builder().target(mCurrentUserLatLng).zoom(12).build();
-                        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
                     }
                 }
                 break;
@@ -394,31 +409,243 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         }
         return isPermissionGranted;
     }
-    //display gy
+    //This Method Manage all Location of the Gyms based on its location through FirebaseDatabase
+    //and if gyms density is high, it will use Map clustering
     public void loadMapMarkers() {
         if(gMap != null) {
+
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng((float) mCurrentUserLocation.getLatitude(),
+                    (float)mCurrentUserLocation.getLongitude()), 10));
+
+            mClusterManager = new ClusterManager<GymClusteringMarker>(getContext(), gMap);
+
+            //Sets Renderer for Change MapMaker's icon
+            mClusterManager.setRenderer(new PersonRenderer());
+            //setOnCameraIdleListener : Sets a callback that is invoked when camera movement has ended.
+            gMap.setOnCameraIdleListener(mClusterManager);
+            //A List for containing GymClusteringMarkers
+            final List<GymClusteringMarker> clusterList = new ArrayList<GymClusteringMarker>();
+
+            gMap.setOnMarkerClickListener(mClusterManager);
+            //set Window Adapter
+            gMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
+
+            gMap.setOnInfoWindowClickListener(mClusterManager);
+            //리스너를 어디에서 초기화?
+            /*mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<GymClusteringMarker>() {
+                @Override
+                public void onClusterItemInfoWindowClick(GymClusteringMarker gymClusteringMarker) {
+                    //deal with it
+                }
+            });
+
+            mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<GymClusteringMarker>() {
+                @Override
+                public boolean onClusterItemClick(GymClusteringMarker gymClusteringMarker) {
+                    //get result when it clicked
+                    return false;
+                }
+            });*/
+
+            mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(
+                    new MyCustomAdapterForItems());
+            ////////////////////
+
             mGymDbReference = FirebaseDatabase.getInstance().getReference().child("gym_data");
             mGymDbReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    //get all data in FireBase's DB and save it into the clusterList
                     for(DataSnapshot c : dataSnapshot.getChildren()) {
-                        Gym g = c.getValue(Gym.class);
+                        Gym gymData = c.getValue(Gym.class);
+                        Log.d(LOG_TAG, gymData.getGymName().toString());
+                        c.getRef();
+                        Log.d(LOG_TAG, "this is the result of getKey : " + c);
 
-                        LatLng marker = new LatLng(g.getGymLat(), g.getGymLng());
-                        String markerName = g.getGymName();
+                        //no need to use marker anymore! use ClusterManager instead.
+                        /*LatLng marker = new LatLng(mGymData.getGymLat(), mGymData.getGymLng());
+                        String markerName = mGymData.getGymName();
                         gMap.addMarker(new MarkerOptions().position(marker).title(markerName));
-                        Log.d(LOG_TAG, markerName);
-                    }
+                        Log.d(LOG_TAG, markerName);*/
 
+                        GymClusteringMarker gymCluster = new GymClusteringMarker(gymData.getGymName(), gymData.getGymName(), gymData.getGymPhotoUri(), gymData.getGymLat(), gymData.getGymLng());
+                        clusterList.add(gymCluster);
+                    }
+                    //add it to manager
+                    mClusterManager.addItems(clusterList);
+                    //execute clustering!
+                    mClusterManager.cluster();
                 }
                 //클래스를 직접 불러와서 for 문돌리기랑 비교교
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
         }
     }
+
+    @Override
+    public void onClusterItemInfoWindowClick(GymClusteringMarker gymClusteringMarker) {
+
+    }
+
+    public class MyCustomAdapterForItems implements GoogleMap.InfoWindowAdapter {
+
+        private final View myContentsView;
+
+        MyCustomAdapterForItems() {
+            myContentsView = getActivity().getLayoutInflater().inflate(
+                    R.layout.info_window, null);
+        }
+        //ImageView를 view_id로 지정해서 바꿀 수있지않나?
+        @Override
+        public View getInfoWindow(Marker marker) {
+
+            Log.d(LOG_TAG, "marker see" + marker.getTitle());
+
+
+            TextView tvTitle = ((TextView) myContentsView
+                    .findViewById(R.id.txtTitle));
+            TextView tvSnippet = ((TextView) myContentsView
+                    .findViewById(R.id.txtSnippet));
+
+            tvTitle.setText(marker.getTitle());
+            tvSnippet.setText(marker.getTitle());
+
+
+            //info윈도우에 이미지 가져오기 연습
+            ImageView cImg = (ImageView) myContentsView.findViewById(R.id.img_view);
+
+            return myContentsView;
+
+        }
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
+        }
+    }
+
+
+    /**
+     * Draws profile photos inside markers (using IconGenerator).
+     * When there are multiple people in the cluster, draw multiple photos (using MultiDrawable).
+     */
+    private class PersonRenderer extends DefaultClusterRenderer<GymClusteringMarker> {
+        private final IconGenerator mIconGenerator = new IconGenerator(getContext());
+        private final IconGenerator mClusterIconGenerator = new IconGenerator(getContext());
+        private ImageView mImageView;
+        private TextView mTextView;
+        private final ImageView mClusterImageView;
+        private final int mXcoordDimension;
+        private final int mYcoordDimension;
+
+        public PersonRenderer() {
+            super(getApplicationContext(), gMap, mClusterManager);
+
+            View multiProfile = getActivity().getLayoutInflater().inflate(R.layout.multi_profile, null);
+            //Use this when customize cluster icon
+            /*mClusterIconGenerator.setContentView(multiProfile);*/
+            mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
+            mTextView = new TextView(getContext());
+            mXcoordDimension = (int) getResources().getDimension(R.dimen.custom_profile_image_Xcoord);
+            mYcoordDimension = (int) getResources().getDimension(R.dimen.custom_profile_image_Ycoord);
+            mTextView.setLayoutParams(new ViewGroup.LayoutParams(mXcoordDimension, mYcoordDimension));
+
+            //지도에 표시될이름에 TV에 사이즈맞춰서 표시되도록
+            mTextView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
+            mTextView.setPadding(padding, padding, padding, padding);
+            mTextView.setPadding(padding, padding, padding, padding);
+            mIconGenerator.setContentView(mTextView);
+        }
+
+        /*문제점
+        * 지금 맵을 확대면 클러스터에서 아이템으로 전환되면서 하단의 메서드를 호출하는데
+        * uri에서 이미지를 불러와서 비트맵으로 변환하는 과정이 시간이 조금 필요한데
+        * 렌더링에서는 이미지 로딩이 끝나기도 전에 메서드를 필요수 만큼 호출해버려서 비트맵 변수의
+        * 값이 싱크가 안맞게 되어버린다.
+        *
+        * 로딩이 끝날떄까지 기다리게하는 리스너가 필요할듯하다.
+        *
+        * */
+        // 이거 안쓸거같은데 일단 지켜보자,../////////////////////////
+       /* @Override
+        protected void onClusterItemRendered(GymClusteringMarker gymClusteringMarker, Marker marker) {
+            Log.v(LOG_TAG, "onClusterItemRendered called");
+            Glide
+                    .with(getContext())
+                    .load(gymClusteringMarker.getGymImgUri())
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                            if (resource != null) {
+                                Bitmap bmp = resource; // Possibly runOnUiThread()
+                                mImageView.setImageBitmap(bmp);
+
+                            }
+
+                        }
+                    });
+
+            Bitmap icon = mIconGenerator.makeIcon();
+
+        }*/
+
+        @Override
+        protected void onBeforeClusterItemRendered(GymClusteringMarker gymClusteringMarker, MarkerOptions markerOptions) {
+            //shows name of Gyms
+            Log.v(LOG_TAG, "onBeforeCluster called");
+            String name = gymClusteringMarker.getName();
+            if(name.length() >= 16) {
+                name =  name.substring(0, 15) + "...";
+            }
+            mTextView.setTextSize(15);
+            mTextView.setText(name);
+
+            //텍스트 옵션 필요한 부분
+            // 1. 글자수 많으면 ...으로표시하기
+            // 2. 글스타일 지정?
+            Bitmap icon = mIconGenerator.makeIcon();
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(gymClusteringMarker.getTitle());
+        }
+
+        @Override
+        protected void onBeforeClusterRendered(Cluster<GymClusteringMarker> cluster, MarkerOptions markerOptions) {
+            super.onBeforeClusterRendered(cluster, markerOptions);
+            // Draw multiple people.
+            // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
+            /*List<Drawable> profilePhotos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
+            int width = mDimension;
+            int height = mDimension;*/
+
+            /*for (GymClusteringMarker p : cluster.getItems()) {
+                // Draw 4 at most.
+                if (profilePhotos.size() == 4) break;
+                Drawable drawable = null;
+                drawable.setBounds(0, 0, width, height);
+                profilePhotos.add(drawable);
+            }
+            MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
+            multiDrawable.setBounds(0, 0, width, height);*/
+
+            /*mClusterImageView.setImageDrawable(multiDrawable);
+            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));*/
+            /*markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));*/
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster (Cluster cluster){
+            // Always render clusters.
+            return cluster.getSize() > 1;
+        }
+
+    }
+
+
+
+
 
     @Override
     public void onStart() {
