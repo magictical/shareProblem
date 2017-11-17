@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,12 +24,22 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.IOException;
 import java.io.InputStream;
 
+import static com.example.android.climbtogether.activity.GymDetailActivity.EXTRA_GYM_DETAIL_KEY;
 import static com.example.android.climbtogether.activity.GymResister.RC_SELECT_PHOTO;
 
 public class ProblemResister extends AppCompatActivity {
     private static final String LOG_TAG = ProblemResister.class.getName();
+
+    //variable to Extra
+
+    private String mGymPrimeKey;
+
+    //request code for select problem photo
+    public static final int RC_SELECT_PB_PHOTO = 101;
+
 
     //Problem's variables
     private String pName;
@@ -74,9 +86,12 @@ public class ProblemResister extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.problem_resister);
 
+        mGymPrimeKey = getIntent().getStringExtra(EXTRA_GYM_DETAIL_KEY);
+
         //Access point of database
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data");
+        mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data")
+        .child(mGymPrimeKey);
 
         //Access point of storage
         mFireBaseStorage = FirebaseStorage.getInstance();
@@ -89,9 +104,9 @@ public class ProblemResister extends AppCompatActivity {
         mSelectImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent photoSelectorIntent = new Intent(Intent.ACTION_PICK);
+                Intent photoSelectorIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 photoSelectorIntent.setType("image/*");
-                startActivityForResult(photoSelectorIntent, RC_SELECT_PHOTO);
+                startActivityForResult(photoSelectorIntent, RC_SELECT_PB_PHOTO);
             }
         });
 
@@ -120,24 +135,22 @@ public class ProblemResister extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, returnIntentData);
 
         switch (requestCode) {
-            case RC_SELECT_PHOTO:
+            case RC_SELECT_PB_PHOTO:
                 if(resultCode == RESULT_OK) {
                     mProblemPhotoUri = returnIntentData.getData();
-                    InputStream imageStream = null;
-                    try {
-                        imageStream = getContentResolver().openInputStream(mProblemPhotoUri);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
-                    mProblemImageView.setImageURI(mProblemPhotoUri);
+                    mProblemImageView.setImageBitmap(resizeImage(mProblemPhotoUri));
                 }
         }
     }
     public void upLoadPhotoToStorage() {
+
+        //block user interaction on the screen while uploading
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
         presentProblemPhotoRef =
                 mProblemStorageReference.child(mProblemPhotoUri.getLastPathSegment());
-        //Upload ifle to Firebase Storage
+        //Upload file to FirebaseStorage
         presentProblemPhotoRef.putFile(mProblemPhotoUri)
                 .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -163,10 +176,52 @@ public class ProblemResister extends AppCompatActivity {
                         //add problem data to Firebase Database
                         mProblemDatabaseReference.push().setValue(problem);
 
+                        //DB 의 Ref를 gymPrimeKey 하단에 새로운 problem의 primKey로 만들어야함
+                        //ex) problem_data/gymPrimeKey/problemPrimeKey
+                        //여기서
+
 
                         Toast.makeText(ProblemResister.this, "Problem has been added",Toast.LENGTH_SHORT).show();
                         Log.v(LOG_TAG, "problem photo Uri's String value is " + pPhotoUriString);
                     }
                 });
+    }
+
+    public Bitmap resizeImage(Uri uri) {
+        //TODO : 이미지가 너무작으면 Dialog로 알려주고 필터링 기준은 640 * 480정도?
+
+        Bitmap reSizedBit = null;
+        /*Bitmap bit = ((BitmapDrawable) view.getDrawable()).getBitmap();*/
+        try{
+            Bitmap bit = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+
+            int width = bit.getWidth();
+            int height = bit.getHeight();
+            float rate = 0.0f;
+
+            int maxResolution = 1920;
+
+            int newWidth = width;
+            int newHeight = height;
+
+            if(width > height) {
+                if(maxResolution < width) {
+                    rate = maxResolution/ (float) width;
+                    newHeight = (int) (height * rate);
+                    newWidth = maxResolution;
+                }
+
+            } else {
+                if(maxResolution < height) {
+                    rate = maxResolution/(float)height;
+                    newWidth = (int) (width * rate);
+                    newHeight = maxResolution;
+                }
+            }
+            reSizedBit = Bitmap.createScaledBitmap(bit, newWidth, newHeight, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return reSizedBit;
     }
 }

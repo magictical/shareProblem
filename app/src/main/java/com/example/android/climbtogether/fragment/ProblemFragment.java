@@ -66,6 +66,8 @@ public class ProblemFragment extends Fragment {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data");
 
+        //putExtra를 받아서 ref만 요청에따라 바뀌는 식으로 recylerAdapter를 구성하면 될듯\
+
         mAddProblem = (Button) rootView.findViewById(R.id.resister_problem_button);
         mAddProblem.setOnClickListener(new View.OnClickListener() {
             @Override
