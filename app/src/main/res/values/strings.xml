@@ -32,4 +32,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--name for tabLayout fragments-->
+    <string name="fragment_problem_all">Recent Problems</string>
+    <string name="fragment_problem_my_gym">My Gym\'s Problems</string>
+    <string name="fragment_problem_my_favorite">My Favorite Problems</string>
 </resources>

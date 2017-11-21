@@ -63,6 +63,8 @@
         </activity>
         <activity android:name=".activity.ProblemListFromGym">
         </activity>
+        <activity android:name=".activity.ProblemTabLayoutActivity">
+        </activity>
     </application>
 
 </manifest>

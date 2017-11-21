@@ -52,6 +52,8 @@ public class ProblemFragment extends Fragment {
 
     private LinearLayoutManager mLinearLayoutManager;
 
+    public ProblemFragment() {}
+
 
 
 
