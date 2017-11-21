@@ -1,6 +1,7 @@
 package com.example.android.climbtogether.activity;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -74,6 +75,16 @@ public class GymDetailActivity extends AppCompatActivity {
                 Intent intentToResisterPb = new Intent(GymDetailActivity.this, ProblemResister.class);
                 intentToResisterPb.putExtra(EXTRA_GYM_DETAIL_KEY, mGymDetailKey);
                 startActivity(intentToResisterPb);
+            }
+        });
+
+        //start fragment
+        mDetailSeeProblemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ProblemListFromGym.class);
+                intent.putExtra(EXTRA_GYM_DETAIL_KEY, mGymDetailKey);
+                startActivity(intent);
             }
         });
 
