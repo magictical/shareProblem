@@ -70,6 +70,8 @@ public class ProblemResister extends AppCompatActivity {
     //add FireBase Database instances
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mProblemDatabaseReference;
+    //ref for belonged problem
+    private DatabaseReference mBelongedDatabaseReference;
 
     //add Firebase Storage
     private FirebaseStorage mFireBaseStorage;
@@ -88,10 +90,15 @@ public class ProblemResister extends AppCompatActivity {
 
         mGymPrimeKey = getIntent().getStringExtra(EXTRA_GYM_DETAIL_KEY);
 
+        if(mGymPrimeKey == null) {
+            throw new IllegalArgumentException("need gymPrimeKey");
+        }
         //Access point of database
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data")
+        mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data");
+        mBelongedDatabaseReference = mFirebaseDatabase.getReference().child("belong_problems")
         .child(mGymPrimeKey);
+
 
         //Access point of storage
         mFireBaseStorage = FirebaseStorage.getInstance();
@@ -173,8 +180,12 @@ public class ProblemResister extends AppCompatActivity {
                         }
                         Problem problem = new Problem(pName, pPhotoUriString, pLevel, pCreator, pFinisher, pChallenger,
                                 pExpireDay);
+
+                        Log.v(LOG_TAG, "PrimeKey is : " + mGymPrimeKey);
                         //add problem data to Firebase Database
+                        mBelongedDatabaseReference.push().setValue(problem);
                         mProblemDatabaseReference.push().setValue(problem);
+
 
                         //DB 의 Ref를 gymPrimeKey 하단에 새로운 problem의 primKey로 만들어야함
                         //ex) problem_data/gymPrimeKey/problemPrimeKey
