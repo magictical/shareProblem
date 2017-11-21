@@ -61,6 +61,8 @@
         </activity>
         <activity android:name=".activity.ProblemDetailActivity">
         </activity>
+        <activity android:name=".activity.ProblemListFromGym">
+        </activity>
     </application>
 
 </manifest>
