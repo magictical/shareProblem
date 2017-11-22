@@ -41,13 +41,13 @@
         </activity>
         <activity
             android:name=".activity.GymResister"
-            android:label="Resister Your Gym"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:label="Resister Your Gym">
+        </activity>
 
-        <fragment
-            android:name=".fragment.ProblemFragment"
-            android:label="Check the Problems In the Gym">
-        </fragment>
+        <!--        <fragment
+                    android:name=".fragment.ProblemFragment"
+                    android:label="Check the Problems In the Gym">
+                </fragment>-->
 
         <activity
             android:name=".activity.ProblemResister"
@@ -57,13 +57,21 @@
         </activity>
         <activity android:name=".activity.UserProfile">
         </activity>
-        <activity android:name=".activity.GymDetailActivity">
+        <activity
+            android:name=".activity.GymDetailActivity"
+            android:label="Gym Detail View Page">
         </activity>
-        <activity android:name=".activity.ProblemDetailActivity">
+        <activity
+            android:name=".activity.ProblemDetailActivity"
+            android:label="Problem Detail View Page">
         </activity>
-        <activity android:name=".activity.ProblemListFromGym">
+        <activity
+            android:name=".activity.ProblemListFromGym"
+            android:label="ProblemList View Page">
         </activity>
-        <activity android:name=".activity.ProblemTabLayoutActivity">
+        <activity
+            android:name=".activity.ProblemTabLayoutActivity"
+            android:label="Problem List">
         </activity>
     </application>
 

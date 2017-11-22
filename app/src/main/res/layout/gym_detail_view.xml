@@ -1,192 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/detail_gym_image_view"
-        android:layout_width="0dp"
-        android:layout_height="190dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:orientation="horizontal"
-        android:scaleType="centerCrop"
+    <include
+        layout="@layout/tool_bar">
+    </include>
 
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="0dp"
-        app:layout_constraintHorizontal_bias="0.0"/>
-
-    <TextView
-        android:id="@+id/detail_gym_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="24dp"
-        tools:text="GymName"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_image_view"
-        android:layout_marginLeft="24dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-
-    <ImageView
-        android:id="@+id/detail_gym_icon_contact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_call_black_24dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_callTo"
-        android:layout_marginLeft="48dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-
-    <ImageView
-        android:id="@+id/detail_gym_icon_payment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_payment_black_24dp"
-        android:layout_marginLeft="48dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_location"/>
-
-    <ImageView
-        android:id="@+id/detail_gym_icon_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_map_black_24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_contact"
-        android:layout_marginLeft="48dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        />
-
-    <ImageView
-        android:id="@+id/detail_gym_icon_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_access_time_black_24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_payment"
-        android:layout_marginLeft="48dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        />
-
-    <ImageView
-        android:id="@+id/detail_gym_icon_map_dot_point"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_pin_drop_black_48dp"
-        app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_callTo"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_name"/>
-
-    <ImageView
-        android:id="@+id/detail_gym_icon_callTo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_contact_phone_black_48dp"
-        android:layout_marginTop="17dp"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_name"
-        android:layout_marginLeft="32dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
 
-    <Button
-        android:id="@+id/detail_gym_button_add_problems"
-        android:layout_width="70dp"
-        android:layout_height="48dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="16dp"
-        android:text="Add Problem"
-        android:textSize="9dp"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_map_dot_point"
-        app:layout_constraintRight_toLeftOf="@+id/detail_gym_button_see_problems"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_name"/>
+        <ImageView
+            android:id="@+id/detail_gym_image_view"
+            android:layout_width="0dp"
+            android:layout_height="190dp"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
 
-    <Button
-        android:id="@+id/detail_gym_button_see_problems"
-        android:layout_width="70dp"
-        android:layout_height="48dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
-        android:text="See Problems"
-        android:textSize="9dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_name"
-        />
+            android:scaleType="centerCrop"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextView
-        android:id="@+id/detail_gym_contact_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="0dp"
-        android:text="TextView"
-        app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_contact"
-        app:layout_constraintTop_toTopOf="@+id/detail_gym_icon_contact"
-        tools:text="+46 8 730 00 93"
-        />
+        <TextView
+            android:id="@+id/detail_gym_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="TextView"
+            android:textSize="24dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_image_view"
+            tools:text="GymName"/>
 
-    <TextView
-        android:id="@+id/detail_gym_location"
-        android:layout_width="237dp"
-        android:layout_height="wrap_content"
-        android:maxLines="2"
-        android:text="TextView"
-        tools:text=" Tellusgången 22-24, 126 37 Hägersten, Sweden"
-        app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_location"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_contact"/>
+        <ImageView
+            android:id="@+id/detail_gym_icon_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_callTo"
+            app:srcCompat="@drawable/ic_call_black_24dp"/>
 
-    <TextView
-        android:id="@+id/detail_gym_payment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
-        android:text="TextView"
-        app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_payment"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_location"
-        tools:text="15$/day"/>
+        <ImageView
+            android:id="@+id/detail_gym_icon_payment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_location"
+            app:srcCompat="@drawable/ic_payment_black_24dp"/>
 
-    <TextView
-        android:id="@+id/detail_gym_opening_hours"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
-        android:text="09:00 - 20:00"
-        app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_time"
-        app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_payment"/>
+        <ImageView
+            android:id="@+id/detail_gym_icon_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_contact"
+            app:srcCompat="@drawable/ic_map_black_24dp"/>
 
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/detail_gym_icon_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_payment"
+            app:srcCompat="@drawable/ic_access_time_black_24dp"/>
 
-    <ProgressBar
-        android:id="@+id/gym_image_progressbar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/detail_gym_image_view"
-        app:layout_constraintLeft_toLeftOf="@+id/detail_gym_image_view"
-        app:layout_constraintRight_toRightOf="@+id/detail_gym_image_view"
-        app:layout_constraintTop_toTopOf="@+id/detail_gym_image_view"
-        android:progressDrawable="@drawable/style_progressbar"
-        android:indeterminateDrawable="@drawable/style_progressbar"/>
+        <ImageView
+            android:id="@+id/detail_gym_icon_map_dot_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_callTo"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_name"
+            app:srcCompat="@drawable/ic_pin_drop_black_48dp"/>
 
-</android.support.constraint.ConstraintLayout>
+        <ImageView
+            android:id="@+id/detail_gym_icon_callTo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="17dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_name"
+            app:srcCompat="@drawable/ic_contact_phone_black_48dp"/>
+
+
+        <Button
+            android:id="@+id/detail_gym_button_add_problems"
+            android:layout_width="88dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="Add Problem"
+            android:textSize="9dp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_map_dot_point"
+            app:layout_constraintRight_toLeftOf="@+id/detail_gym_button_see_problems"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_name"/>
+
+        <Button
+            android:id="@+id/detail_gym_button_see_problems"
+            android:layout_width="88dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="16dp"
+            android:text="See Problems"
+            android:textSize="9dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_name"/>
+
+        <TextView
+            android:id="@+id/detail_gym_contact_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:text="TextView"
+            app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_contact"
+            app:layout_constraintTop_toTopOf="@+id/detail_gym_icon_contact"
+            tools:text="+46 8 730 00 93"/>
+
+        <TextView
+            android:id="@+id/detail_gym_location"
+            android:layout_width="237dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:maxLines="2"
+            android:text="TextView"
+            app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_location"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_contact"
+            tools:text=" Tellusgången 22-24, 126 37 Hägersten, Sweden"/>
+
+        <TextView
+            android:id="@+id/detail_gym_payment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="TextView"
+            app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_payment"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_location"
+            tools:text="15$/day"/>
+
+        <TextView
+            android:id="@+id/detail_gym_opening_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="09:00 - 20:00"
+            app:layout_constraintLeft_toRightOf="@+id/detail_gym_icon_time"
+            app:layout_constraintTop_toBottomOf="@+id/detail_gym_icon_payment"/>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp"/>
+
+        <ProgressBar
+            android:id="@+id/gym_image_progressbar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:indeterminateDrawable="@drawable/style_progressbar"
+            android:progressDrawable="@drawable/style_progressbar"
+            app:layout_constraintBottom_toBottomOf="@+id/detail_gym_image_view"
+            app:layout_constraintLeft_toLeftOf="@+id/detail_gym_image_view"
+            app:layout_constraintRight_toRightOf="@+id/detail_gym_image_view"
+            app:layout_constraintTop_toTopOf="@+id/detail_gym_image_view"/>
+
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

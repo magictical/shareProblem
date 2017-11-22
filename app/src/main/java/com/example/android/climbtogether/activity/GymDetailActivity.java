@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -50,6 +51,10 @@ public class GymDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gym_detail_view);
 
+        //Add toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
+        setSupportActionBar(toolbar);
+
         //get PutExtra data from Intent(came from GymFragment)
         mGymDetailKey = getIntent().getStringExtra(EXTRA_GYM_DETAIL_KEY);
         if(mGymDetailKey == null) {
@@ -82,8 +87,8 @@ public class GymDetailActivity extends AppCompatActivity {
         mDetailSeeProblemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), ProblemListFromGym.class);
-                intent.putExtra(EXTRA_GYM_DETAIL_KEY, mGymDetailKey);
+                Intent intent = new Intent(getApplicationContext(), ProblemTabLayoutActivity.class);
+                /*intent.putExtra(EXTRA_GYM_DETAIL_KEY, mGymDetailKey);*/
                 startActivity(intent);
             }
         });
