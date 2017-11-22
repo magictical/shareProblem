@@ -2,6 +2,7 @@ package com.example.android.climbtogether.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -48,6 +49,9 @@ public class ProblemDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.problem_detail_view);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
+        setSupportActionBar(toolbar);
 
         mProblemDetailKey = getIntent().getStringExtra(EXTRA_PROBLEM_DETAIL_KEY);
         if(mProblemDetailKey == null) {
