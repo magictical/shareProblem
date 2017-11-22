@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -87,6 +88,10 @@ public class ProblemResister extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.problem_resister);
+
+        //Addd Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
+        setSupportActionBar(toolbar);
 
         mGymPrimeKey = getIntent().getStringExtra(EXTRA_GYM_DETAIL_KEY);
 

@@ -112,9 +112,8 @@ public class GymResister extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gym_resister);
 
-        //add toolbar for upload function on the action bar
-        //attaching layout to the Toolbar object
-        mToolbar = (Toolbar) findViewById(R.id.toolbar_resister_gym);
+        //Add Toolbar
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
         setSupportActionBar(mToolbar);
 
         mUserLocation = getIntent().getExtras().getParcelable(USER_LOCATION_KEY);
@@ -191,6 +190,7 @@ public class GymResister extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            //Add upload button on the Toolbar
             case R.id.action_upload_data:
                 uploadPhotoToStorage();
                 return true;

@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <include
+            layout="@layout/tool_bar"/>
 
         <ImageView
             android:id="@+id/resister_problem_photo"
@@ -25,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Enter a Problem Name"/>
+
         <EditText
             android:id="@+id/resister_problem_name"
             android:layout_width="match_parent"
@@ -35,6 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Enter a Problem level"/>
+
         <EditText
             android:id="@+id/resister_problem_level"
             android:layout_width="match_parent"
@@ -46,6 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Enter a Problem Creator"/>
+
         <EditText
             android:id="@+id/resister_problem_creator"
             android:layout_width="match_parent"
@@ -56,6 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Enter a Problem Finisher"/>
+
         <EditText
             android:id="@+id/resister_problem_finisher"
             android:layout_width="match_parent"
@@ -66,6 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Enter a Problem Challener(리스트로 만들어야함)"/>
+
         <EditText
             android:id="@+id/resister_problem_challenger"
             android:layout_width="match_parent"
@@ -76,6 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Enter a Problem expireday(Date클래스로 만들어야함)"/>
+
         <EditText
             android:id="@+id/resister_problem_expireday"
             android:layout_width="match_parent"
