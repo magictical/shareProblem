@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.example.android.climbtogether.Model.Problem;
 import com.example.android.climbtogether.R;
@@ -29,6 +30,8 @@ public class ProblemTabLayoutActivity extends AppCompatActivity {
         //Add Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
         setSupportActionBar(toolbar);
+        //Add back button on Toolbar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Create the adapter that will return a fragment for each section
         mFragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
@@ -69,5 +72,17 @@ public class ProblemTabLayoutActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.problem_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            //when back button pressed
+            case android.R.id.home :
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

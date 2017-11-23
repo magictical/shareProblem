@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -51,9 +52,13 @@ public class GymDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gym_detail_view);
 
+        /*this.overridePendingTransition(R.anim.left_to_right, R.anim.left_to_right);*/
+
         //Add toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
         setSupportActionBar(toolbar);
+        //add Back Press Button on toolbar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //get PutExtra data from Intent(came from GymFragment)
         mGymDetailKey = getIntent().getStringExtra(EXTRA_GYM_DETAIL_KEY);
@@ -165,6 +170,19 @@ public class GymDetailActivity extends AppCompatActivity {
         //Remove the gym value event listener
         if(mGymListener != null) {
             mGymReference.removeEventListener(mGymListener);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //when back button has been pressed
+        switch (item.getItemId()) {
+            case android.R.id.home :
+                onBackPressed();
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

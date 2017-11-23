@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -92,6 +93,8 @@ public class ProblemResister extends AppCompatActivity {
         //Addd Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
         setSupportActionBar(toolbar);
+        //Add back button on the Toolbar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mGymPrimeKey = getIntent().getStringExtra(EXTRA_GYM_DETAIL_KEY);
 
@@ -154,6 +157,17 @@ public class ProblemResister extends AppCompatActivity {
                 }
         }
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            //when back button pressed
+            case android.R.id.home :
+                onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void upLoadPhotoToStorage() {
 
         //block user interaction on the screen while uploading

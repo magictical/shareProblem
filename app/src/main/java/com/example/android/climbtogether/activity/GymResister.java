@@ -115,6 +115,8 @@ public class GymResister extends AppCompatActivity {
         //Add Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
         setSupportActionBar(mToolbar);
+        //Add back button on Toolbar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mUserLocation = getIntent().getExtras().getParcelable(USER_LOCATION_KEY);
         if(mUserLocation == null) {
@@ -193,6 +195,10 @@ public class GymResister extends AppCompatActivity {
             //Add upload button on the Toolbar
             case R.id.action_upload_data:
                 uploadPhotoToStorage();
+                return true;
+            //when back button pressed
+            case android.R.id.home :
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

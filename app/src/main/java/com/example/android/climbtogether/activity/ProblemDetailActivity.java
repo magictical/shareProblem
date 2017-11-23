@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -52,6 +53,8 @@ public class ProblemDetailActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_for_activities);
         setSupportActionBar(toolbar);
+        //add Back Press Button on toolbar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mProblemDetailKey = getIntent().getStringExtra(EXTRA_PROBLEM_DETAIL_KEY);
         if(mProblemDetailKey == null) {
@@ -125,6 +128,17 @@ public class ProblemDetailActivity extends AppCompatActivity {
         //Remove the gym value event listener
         if(mProblemValueListener != null) {
             mProblemReference.removeEventListener(mProblemValueListener);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home :
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
