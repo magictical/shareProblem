@@ -12,7 +12,7 @@
     <string name="nav_movies">Find Problems</string>
     <string name="nav_notifications">Notifications</string>
     <string name="nav_settings">Settings</string>
-    <string name="nav_about_us">My History</string>
+    <string name="nav_user_profile">My Profile</string>
 
     <!--Toolbar titles when navigation menu item is selected-->
     <string-array name="nav_item_activity_titles">

@@ -349,21 +349,25 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
                         navItemIndex = 1;
                         CURRENT_TAG = TAG_FIND_CLIMBING_GYM;
                         break;
-
                     case  R.id.nav_find_problems:
                         navItemIndex = 2;
                         CURRENT_TAG = TAG_FIND_PROBLEMS;
                         break;
+                    case R.id.nav_notifications:
+                        navItemIndex = 3;
+                        CURRENT_TAG = TAG_NOTIFICATIONS;
+                        break;
+
                     //activity 시작할경우는 아래처럼
     /*                case R.id.nav_about_us:
                         startActivity(new Intent(MainActivity.this, OtherActivity.class));
                         mDrawer.closeDrawers();
                         return true;*/
+                    case R.id.user_profie_activity:
+                        startActivity(new Intent(MainActivity.this, UserProfile.class));
+                        mDrawer.closeDrawers();
+                        return true;
 
-                    case R.id.nav_notifications:
-                        navItemIndex = 3;
-                        CURRENT_TAG = TAG_NOTIFICATIONS;
-                        break;
                     default:
                         navItemIndex = 0;
                 }
