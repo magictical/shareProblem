@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
                 .into(imgNavHeaderBg);
 
         //Loading profile image
-        Glide.with(this).load(urlProfileImg)
+        Glide.with(this).load(R.drawable.profile_base)
         .crossFade()
                 .thumbnail(0.5f)
                 .bitmapTransform(new CircleTransform(this))

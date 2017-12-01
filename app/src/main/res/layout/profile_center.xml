@@ -24,15 +24,17 @@
             android:layout_below="@id/top_profile_include">
 
             <LinearLayout
+                android:id="@+id/LineLayout_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:paddingLeft="13dp"
+                android:paddingTop="8dp"
                 android:weightSum="100">
 
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-
                     android:layout_weight="25">
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -53,11 +55,39 @@
                     android:layout_weight="75">
 
                     <include
+                        android:id="@+id/include_profile_post_view"
                         layout="@layout/profile_post_view"/>
 
                 </RelativeLayout>
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/LineLayout_top"
+                android:paddingTop="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Your name"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="say something to visitor"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="user homepage or Sns"/>
+
+             </LinearLayout>
 
 
         </RelativeLayout>
