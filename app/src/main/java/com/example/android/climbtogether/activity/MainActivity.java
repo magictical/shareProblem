@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.android.climbtogether.Model.User;
 import com.example.android.climbtogether.R;
 import com.example.android.climbtogether.fragment.GymFragment;
 import com.example.android.climbtogether.fragment.HomeFragment;
@@ -32,6 +33,8 @@ import com.example.android.climbtogether.other.CircleTransform;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 
@@ -80,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
     //Current UserLocation data
     private Location mUserLocation;
 
+    private DatabaseReference mUserAccInfoDatabaseReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
         //add toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mUserAccInfoDatabaseReference = FirebaseDatabase.getInstance().getReference().child("user_data");
 
         //Handler 생성(runable에서 사용할듯?)
         mHandler = new android.os.Handler();
@@ -133,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     //handle the signed in user
+                    //update user info with successive sign-in
+                    WriteUserAccInfo(mFirebaseAuth);
                 } else {
                     //handle the signed out user
                     startActivityForResult(
@@ -146,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
                 }
             }
         };
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -406,6 +416,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
     @Override
     protected void onStart() {
         super.onStart();
+        if(mFirebaseAuth != null) {
+        }
         Log.d(LOG_TAG, "Main onStart called");
     }
 
@@ -467,5 +479,24 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.User
         } else {
             fab.hide();
         }
+    }
+
+    //User 기본 정보 받아서 DB에 업데이트 하는 메서드
+    //최초 로그인 할때랑(login Activity같은경우) userProfile이 업데이트 되는경우에 변경되도록 해야함
+    private void WriteUserAccInfo(FirebaseAuth auth) {
+        FirebaseUser authUserInfo = auth.getCurrentUser();
+        //get user info
+        try {
+            String name = authUserInfo.getDisplayName();
+            String email = authUserInfo.getEmail();
+            String photoUrl = authUserInfo.getPhotoUrl().toString();
+
+            User userAccInfo = new User(name, email, photoUrl);
+            mUserAccInfoDatabaseReference.child(authUserInfo.getUid()).setValue(userAccInfo);
+            Log.v(LOG_TAG, "user info is : " + name +" " + email + "\n" + photoUrl);
+        } catch (NullPointerException e) {
+            Log.v(LOG_TAG, "error in  " + e.toString());
+        }
+
     }
 }
