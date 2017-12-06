@@ -44,16 +44,16 @@
             android:label="Resister Your Gym">
         </activity>
 
-        <!--        <fragment
+        <!--
+                    <fragment
                     android:name=".fragment.ProblemFragment"
                     android:label="Check the Problems In the Gym">
-                </fragment>-->
+                </fragment>
+        -->
 
         <activity
             android:name=".activity.ProblemResister"
             android:label="Add your Problems">
-        </activity>
-        <activity android:name=".activity.MyHistoryActivity">
         </activity>
         <activity android:name=".activity.UserProfile">
         </activity>
@@ -72,6 +72,9 @@
         <activity
             android:name=".activity.ProblemTabLayoutActivity"
             android:label="Problem List">
+        </activity>
+        <activity android:name=".activity.UserProfileEdit"
+            android:label="Edit Profile">
         </activity>
     </application>
 
