@@ -11,18 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.android.climbtogether.Model.Gym;
 import com.example.android.climbtogether.Model.Problem;
 import com.example.android.climbtogether.ProblemAdapter;
 import com.example.android.climbtogether.R;
 import com.example.android.climbtogether.activity.ProblemDetailActivity;
 import com.example.android.climbtogether.activity.ProblemResister;
 import com.example.android.climbtogether.viewHolder.ProblemViewHolder;
+import com.example.android.climbtogether.viewHolder.ViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -40,6 +43,9 @@ public class ProblemFragment extends Fragment {
     FirebaseStorage mFirebaseStorage;
     StorageReference mProblemStorageReference;
 
+    //ref for test order by gym name
+    DatabaseReference mGymDatabaseReference;
+
     //child DB listener
     ChildEventListener mChildEventListener;
 
@@ -48,7 +54,7 @@ public class ProblemFragment extends Fragment {
     //Add RecyclerView
     RecyclerView mRecyclerView;
 
-    private FirebaseRecyclerAdapter<Problem, ProblemViewHolder> mFirebaseRecyclerAdapter;
+    private FirebaseRecyclerAdapter<Gym, ViewHolder> mFirebaseRecyclerAdapter;
 
     private LinearLayoutManager mLinearLayoutManager;
 
@@ -66,9 +72,16 @@ public class ProblemFragment extends Fragment {
 
         //add Access point of FirebaseDatabase
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data");
+        /*mProblemDatabaseReference = mFirebaseDatabase.getReference().child("problem_data");*/
 
-        //putExtra를 받아서 ref만 요청에따라 바뀌는 식으로 recylerAdapter를 구성하면 될듯\
+        //Gym ref
+        mGymDatabaseReference = mFirebaseDatabase.getReference().child("gym_data");
+
+
+
+
+
+                //putExtra를 받아서 ref만 요청에따라 바뀌는 식으로 recylerAdapter를 구성하면 될듯\
 
         mAddProblem = (Button) rootView.findViewById(R.id.resister_problem_button);
         mAddProblem.setOnClickListener(new View.OnClickListener() {
@@ -123,13 +136,15 @@ public class ProblemFragment extends Fragment {
 
                 }
             };
-            mProblemDatabaseReference.addChildEventListener(mChildEventListener);
+            /*mProblemDatabaseReference.addChildEventListener(mChildEventListener);*/
+            mGymDatabaseReference.addChildEventListener(mChildEventListener);
         }
     }
 
     private void detachDatabaseListener() {
         if (mChildEventListener != null) {
-            mProblemDatabaseReference.removeEventListener(mChildEventListener);
+            /*mProblemDatabaseReference.removeEventListener(mChildEventListener);*/
+            mGymDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
     }
@@ -139,21 +154,25 @@ public class ProblemFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mLinearLayoutManager.setReverseLayout(true);
-        mLinearLayoutManager.setStackFromEnd(true);
+        /*mLinearLayoutManager.setReverseLayout(true);
+        mLinearLayoutManager.setStackFromEnd(true);*/
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Problem, ProblemViewHolder>(
-                Problem.class,
-                R.layout.listitem_problem,
-                ProblemViewHolder.class,
-                mProblemDatabaseReference
+        Query nameQuery = mGymDatabaseReference.orderByChild("gymName");
+
+        mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Gym, ViewHolder>(
+                Gym.class,
+                R.layout.listitem_in_gym,
+                ViewHolder.class,
+                nameQuery
         ) {
             @Override
-            protected void populateViewHolder(ProblemViewHolder viewHolder, Problem model, int position) {
+            protected void populateViewHolder(ViewHolder viewHolder, Gym model, int position) {
                 final DatabaseReference problemRef = getRef(position);
                 //Set Click listener for the Problem detail view
                 final String problemDetailKey = problemRef.getKey();
+
+
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -164,7 +183,7 @@ public class ProblemFragment extends Fragment {
                         startActivity(intent);
                     }
                 });
-                viewHolder.bindToProblem(model);
+                viewHolder.bindToGym(model);
             }
         };
         mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
