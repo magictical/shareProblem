@@ -15,6 +15,7 @@ import com.example.android.climbtogether.Model.Gym;
 import com.example.android.climbtogether.Model.Problem;
 import com.example.android.climbtogether.ProblemAdapter;
 import com.example.android.climbtogether.R;
+import com.example.android.climbtogether.activity.GymDetailActivity;
 import com.example.android.climbtogether.activity.ProblemDetailActivity;
 import com.example.android.climbtogether.activity.ProblemResister;
 import com.example.android.climbtogether.viewHolder.ProblemViewHolder;
@@ -154,23 +155,27 @@ public class ProblemFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mLinearLayoutManager = new LinearLayoutManager(getContext());
-        /*mLinearLayoutManager.setReverseLayout(true);
-        mLinearLayoutManager.setStackFromEnd(true);*/
+        mLinearLayoutManager.setReverseLayout(true);
+        mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        Query nameQuery = mGymDatabaseReference.orderByChild("gymName");
+        //order by name
+        Query nameQueryASC = mGymDatabaseReference.orderByChild("gymName");
+        //order by name ascend
+        Query nameQueryDES = mGymDatabaseReference.orderByChild("gymName");
+
 
         mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Gym, ViewHolder>(
                 Gym.class,
                 R.layout.listitem_in_gym,
                 ViewHolder.class,
-                nameQuery
+                nameQueryASC
         ) {
             @Override
             protected void populateViewHolder(ViewHolder viewHolder, Gym model, int position) {
                 final DatabaseReference problemRef = getRef(position);
                 //Set Click listener for the Problem detail view
-                final String problemDetailKey = problemRef.getKey();
+                final String gymDetailKey = problemRef.getKey();
 
 
 
@@ -178,8 +183,8 @@ public class ProblemFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         //launch problem DetailView
-                        Intent intent = new Intent(getActivity(), ProblemDetailActivity.class);
-                        intent.putExtra(ProblemDetailActivity.EXTRA_PROBLEM_DETAIL_KEY, problemDetailKey);
+                        Intent intent = new Intent(getActivity(), GymDetailActivity.class);
+                        intent.putExtra(GymDetailActivity.EXTRA_GYM_DETAIL_KEY, gymDetailKey);
                         startActivity(intent);
                     }
                 });
