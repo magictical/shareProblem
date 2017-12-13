@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.android.climbtogether.Model.Gym;
 import com.example.android.climbtogether.R;
+import com.example.android.climbtogether.fragment.DatePickerFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +35,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,12 +45,15 @@ import java.util.Locale;
  * Created by MD on 2017-02-16.
  */
 
-public class GymResister extends AppCompatActivity {
+public class GymResister extends AppCompatActivity implements DatePickerFragment.DateDialogListener {
     //Constant for photo select requestCode
     public static final int RC_SELECT_PHOTO = 100;
     //Constant for photo upload to storage requestCode
     public static final int RC_UPLOAD_PHOTO = 200;
     public static final String LOG_TAG = GymResister.class.getName();
+
+    //tag for DateDialog
+    private static final String DIALOG_DATE = "GymResister.DateDialog";
 
     private Toolbar mToolbar;
 
@@ -62,6 +69,10 @@ public class GymResister extends AppCompatActivity {
     private EditText mEditGymContact;
     private EditText mEditGymPrice;
     private ImageView mSelectedImage;
+    //button for change Date
+    private Button mChgDateButton;
+    //EditView for Date and time
+    private EditText mEditDatenTime;
 
     private Button mAddGymButton;
     //button for select image
@@ -167,6 +178,22 @@ public class GymResister extends AppCompatActivity {
 
         //select img from sd card using by Intent and display img
         mSelectedImage = (ImageView) findViewById(R.id.resister_gym_photo_image_view);
+
+        //button for change the Date
+        mChgDateButton = (Button) findViewById(R.id.resister_change_date);
+        //editText for time and date
+        mEditDatenTime = (EditText) findViewById(R.id.resister_gym_date);
+        Date currentD = Calendar.getInstance().getTime();
+        mEditDatenTime.setText(dateToString(currentD));
+
+        mChgDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerFragment dialogDatePickerFragment = new DatePickerFragment();
+                dialogDatePickerFragment.show(getFragmentManager(), DIALOG_DATE);
+            }
+        });
+
 
 
         getAddressFromLocationData();
@@ -388,6 +415,25 @@ public class GymResister extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onFinishDialog(Date date) {
+        mEditDatenTime.setText(dateToString(date));
+
+    }
+
+    public String dateToString(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        String convertedDate = simpleDateFormat.format(date);
+        //좀있다가 할거는 Date resister edit 에서
+        return convertedDate;
+    }
+
+    public String dateToStringDetail(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        String convertedDate = simpleDateFormat.format(date);
+        return convertedDate;
+    }
+
     public Bitmap resizeImage(Uri uri) {
         //TODO : 이미지가 너무작으면 Dialog로 알려주고 필터링 기준은 640 * 480정도?
 
@@ -424,6 +470,8 @@ public class GymResister extends AppCompatActivity {
             e.printStackTrace();
         }
         return reSizedBit;
+
+
     }
 
 }
