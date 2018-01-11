@@ -8,6 +8,7 @@ public class Gym {
     private String gymName;
     public String gymAddress;
     public String gymContact;
+    public long gymDate;
     public int gymPrice;
     public String gymPhotoUri;
     public double gymLat;
@@ -28,11 +29,12 @@ public class Gym {
     /*private Problem gymProblem;*/
     public Gym() {}
 
-    public Gym(String gymName, String gymAddress, String gymContact, int gymPrice, String gymPhotoUri,
+    public Gym(String gymName, String gymAddress, long gymDate, String gymContact, int gymPrice, String gymPhotoUri,
                double gymLat, double gymLng, double gymAlt, float providerAccuracy, float providerBearing,
                String providerName, long resisteredTime) {
         this.gymName = gymName;
         this.gymAddress = gymAddress;
+        this.gymDate = gymDate;
         this.gymPhotoUri = gymPhotoUri;
         this.gymContact = gymContact;
         this.gymPrice = gymPrice;
@@ -61,6 +63,14 @@ public class Gym {
 
     public void setGymAddress(String gymAddress) {
         this.gymAddress = gymAddress;
+    }
+
+    public long getGymDate() {
+        return gymDate;
+    }
+
+    public void setGymDate(long gymDate) {
+        this.gymDate = gymDate;
     }
 
     public String getGymPhotoUri() {

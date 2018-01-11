@@ -155,21 +155,25 @@ public class ProblemFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mLinearLayoutManager.setReverseLayout(true);
-        mLinearLayoutManager.setStackFromEnd(true);
+        /*boolean iconClicked = true;
+        if(iconClicked)*/
+
+        //set order
+        mLinearLayoutManager.setReverseLayout(false);
+
+        //if true start the list view from the bottom
+        mLinearLayoutManager.setStackFromEnd(false);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         //order by name
-        Query nameQueryASC = mGymDatabaseReference.orderByChild("gymName");
-        //order by name ascend
-        Query nameQueryDES = mGymDatabaseReference.orderByChild("gymName");
+        Query nameQuery = mGymDatabaseReference.orderByChild("gymName");
 
 
         mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Gym, ViewHolder>(
                 Gym.class,
                 R.layout.listitem_in_gym,
                 ViewHolder.class,
-                nameQueryASC
+                nameQuery
         ) {
             @Override
             protected void populateViewHolder(ViewHolder viewHolder, Gym model, int position) {

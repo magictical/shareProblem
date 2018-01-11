@@ -32,7 +32,7 @@ public class DatePickerFragment extends DialogFragment {
         mDatePicker = (DatePicker) v.findViewById(R.id.dialog_date_date_picker);
         return new android.support.v7.app.AlertDialog.Builder(getActivity())
                 .setView(v)
-                .setTitle("enter the title here")
+                .setTitle("Edited from")
                 .setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             @Override
